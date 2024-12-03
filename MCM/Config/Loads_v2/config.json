@@ -1,0 +1,162 @@
+{
+  "modName": "Loads_v2",
+  "displayName": "Loads of Ammo v2",
+  "minMcmVersion": 1,
+  "pluginRequirements": [
+    "Loads_v2.esm"
+  ],
+  "content": [
+    {
+      "text": "Loads of Ammo adds a framework for equipping new types of ammunition, changing your scope type and zoom, and even switching weapons to secondary fire modes. Set the hotkeys for each action in each section.",
+      "type": "text"
+    },
+    {
+      "text": "The main, context-sensitive hotkeys control your ammunition type and secondary weapon mode when not zoomed in, and your scope zoom and mode when using a scope.",
+      "type": "text"
+    },
+    {
+      "id": "loadsContextNext",
+      "text": "Next ammo type / Zoom in",
+      "type": "hotkey",
+      "help": "Load the next type of ammunition in your inventory / Zoom in if using a scope.",
+      "valueOptions": {"allowModifierKeys": true}
+    },
+    {
+      "id": "loadsContextPrev",
+      "text": "Previous ammo type / Zoom out",
+      "type": "hotkey",
+      "help": "Load the previous type of ammunition in your inventory / Zoom out if using a scope.",
+      "valueOptions": {"allowModifierKeys": true}
+    },
+    {
+      "id": "loadsContextDefault",
+      "text": "Default ammo type / Default zoom",
+      "type": "hotkey",
+      "help": "Load the default type of ammunition for your weapon / Go to maximum zoom.",
+      "valueOptions": {"allowModifierKeys": true}
+    },
+    {
+      "id": "loadsContextToggle",
+      "text": "Toggle secondary mode / Toggle alernate zoom mode",
+      "type": "hotkey",
+      "help": "Load the default type of ammunition for your weapon / Go to maximum zoom.",
+      "valueOptions": {"allowModifierKeys": true}
+    }
+  ],
+  "pages": [
+    {
+      "pageDisplayName": "Ammo",
+      "content": [
+        {
+          "text": "To craft alternate ammo types for switching to/from, use an Ammunition Workbench. Recipes only show for ammo types you have in inventory.",
+          "type": "text"
+        },
+        {
+          "text": "Ammo Type Hotkeys",
+          "type": "section"
+        },
+        {
+          "text": "These hotkeys equip specific categories of ammo, by tags set on them.",
+          "type": "text"
+        },
+        {
+          "id": "loadsAmmoType_AntiArmour",
+          "text": "Load anti-armour ammunition",
+          "type": "hotkey",
+          "help": "Reload the current weapon with ammunition specialised against armoured targets.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsAmmoType_AntiPersonnel",
+          "text": "Load anti-personnel ammunition",
+          "type": "hotkey",
+          "help": "Reload the current weapon with ammunition specialised against unarmoured targets.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsAmmoType_RangeShort",
+          "text": "Load short-range ammunition",
+          "type": "hotkey",
+          "help": "Reload the current weapon with ammunition best at short range.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsAmmoType_RangeLong",
+          "text": "Load long-range ammunition",
+          "type": "hotkey",
+          "help": "Reload the current weapon with ammunition best at long range.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsAmmoType_Superior",
+          "text": "Load superior ammunition",
+          "type": "hotkey",
+          "help": "Reload the current weapon with ammunition good against all targets.",
+          "valueOptions": {"allowModifierKeys": true}
+        }
+      ]
+    },
+    {
+      "pageDisplayName": "Modes",
+      "content": [
+        {
+          "text": "Some weapons have a selectable modes. Modify a weapon to enable this - usually by equipping an automatic receiver or silencer with the (mode) tag. Secondary weapons do not have switchable modes.",
+          "type": "text"
+        },
+        {
+          "text": "Mode Select Hotkeys",
+          "type": "section"
+        },
+        {
+          "text": "These hotkeys cycle between available modes for a weapon. Only one mode is active at a time.",
+          "type": "text"
+        },
+        {
+          "id": "loadsPrimaryModeCycleNext",
+          "text": "Next fire mode",
+          "type": "hotkey",
+          "help": "Switch to the next mode for the current weapon.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsPrimaryModeCyclePrev",
+          "text": "Previous fire mode",
+          "type": "hotkey",
+          "help": "Switch to the previous mode for the current weapon.",
+          "valueOptions": {"allowModifierKeys": true}
+        },
+        {
+          "id": "loadsPrimaryModeDefault",
+          "text": "Default fire mode",
+          "type": "hotkey",
+          "help": "Switch to the default mode for the current weapon.",
+          "valueOptions": {"allowModifierKeys": true}
+        }
+      ]
+    },
+    {
+      "pageDisplayName": "Debug",
+      "content": [
+        {
+          "text": "Debug",
+          "type": "Title"
+        },
+        {
+          "text": "These debug commands shouldn't be needed. If you add/remove mods adding new calibres and ammo types, and find you can't use them, try running these.",
+          "type": "text"
+        },
+        {
+          "id": "loadsRebuildCache",
+          "text": "Rebuild caches",
+          "type": "switcher",
+          "help": "Forces a rebuild of the calibre caches when the menu is closed.",
+          "valueOptions": {
+            "sourceType": "PropertyValueBool",
+            "sourceForm": "Loads_v2.esm|500A",
+            "propertyName": "bRebuildCache"
+          }
+        }
+      ]
+    }
+  ]
+}

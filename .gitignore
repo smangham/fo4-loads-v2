@@ -1,0 +1,31 @@
+# Want to force-add if needed
+*.esp
+*.esm
+*.esl
+*.json
+*.xml
+
+Interface/*
+Materials/*
+Meshes/*
+Scripts/*
+MCM/*
+F4SE/*
+Sound/*
+textures/*
+Video/*
+
+# *Actually* never want
+*.psc
+*.dll
+*.ba2
+*.csg
+*.cdx
+*.vortex_backup
+Complex Sorter/*
+FO4Edit Backups/*
+FO4Edit Cache/*
+LSData/*
+fomod/*
+Settings/*
+venv/*

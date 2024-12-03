@@ -1,0 +1,118 @@
+{
+  "modName": "Loads_v2",
+  "keybinds": [
+    {
+      "id": "loadsContextNext",
+      "desc": "Next ammo / Zoom in",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyContextNext"
+      }
+    },
+    {
+      "id": "loadsContextPrev",
+      "desc": "Prev ammo / Zoom out",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyContextPrev"
+      }
+    },
+    {
+      "id": "loadsContextDefault",
+      "desc": "Default ammo / Default zoom",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyContextDefault"
+      }
+    },
+    {
+      "id": "loadsContextToggle",
+      "desc": "Toggle secondary mode / scope type",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyContextToggle"
+      }
+    },
+    {
+      "id": "loadsAmmoType_AntiArmour",
+      "desc": "Anti-armour ammunition",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "AmmoCycleNext",
+        "params": ["Loads_v2.esm|832"]
+      }
+    },
+    {
+      "id": "loadsAmmoType_AntiPersonnel",
+      "desc": "Anti-personnel ammunition",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "AmmoCycleNext",
+        "params": ["Loads_v2.esm|833"]
+      }
+    },
+    {
+      "id": "loadsAmmoType_RangeShort",
+      "desc": "Short-range ammunition",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "AmmoCycleNext",
+        "params": ["Loads_v2.esm|835"]
+      }
+    },
+    {
+      "id": "loadsAmmoType_RangeLong",
+      "desc": "Long-range ammunition",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "AmmoCycleNext",
+        "params": ["Loads_v2.esm|836"]
+      }
+    },
+    {
+      "id": "loadsAmmoType_Superior",
+      "desc": "Superior ammunition",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "AmmoCycleNext",
+        "params": ["Loads_v2.esm|834"]
+      }
+    },
+    {
+      "id": "loadsPrimaryModeCycleNext",
+      "desc": "Next rate of fire",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyPrimaryRateCycleNext"
+      }
+    },
+    {
+      "id": "loadsPrimaryModeCyclePrev",
+      "desc": "Previous rate of fire",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyPrimaryRateCyclePrev"
+      }
+    },
+    {
+      "id": "loadsPrimaryModeDefault",
+      "desc": "Default mode",
+      "action": {
+        "type": "CallFunction",
+        "form": "Loads_v2.esm|500A",
+        "function": "HotkeyPrimaryRateDefault"
+      }
+    }
+  ]
+}
