@@ -89,29 +89,29 @@
     },
     {
       "id": "loadsPrimaryModeCycleNext",
-      "desc": "Next rate of fire",
+      "desc": "Next primary weapon mode",
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "HotkeyPrimaryRateCycleNext"
+        "function": "HotkeyPrimaryModeCycleNext"
       }
     },
     {
       "id": "loadsPrimaryModeCyclePrev",
-      "desc": "Previous rate of fire",
+      "desc": "Previous primary weapon mode",
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "HotkeyPrimaryRateCyclePrev"
+        "function": "HotkeyPrimaryModeCyclePrev"
       }
     },
     {
       "id": "loadsPrimaryModeDefault",
-      "desc": "Default mode",
+      "desc": "Default primary weapon mode",
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "HotkeyPrimaryRateDefault"
+        "function": "HotkeyPrimaryModeDefault"
       }
     }
   ]

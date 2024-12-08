@@ -6,6 +6,10 @@ Scriptname a0aLOADS_QST_ManagerScript extends Quest
 ; ----------------------------------------
 ; Used whenever an ObjectMod can't be applied
 Message Property a0aLOADS_MESG_Error_TooManyItems Auto Const
+Message Property a0aLOADS_MESG_Error_Unknown Auto Const
+
+; Used for unequip-equip switches
+Bool bScriptedReequip = False
 
 ; More performant than Game.GetPlayer()
 ; Actor Property PlayerRef Auto Const
@@ -60,16 +64,15 @@ ObjectMod Property a0aLOADS_OMOD_Slots Auto Const
 ObjectMod Property a0aLOADS_OMOD_Ammo_Default Auto Const
 
 ; Errors when switching ammo
-Message Property a0aLOADS_MESG_AmmoError_Unknown Auto Const
 Message Property a0aLOADS_MESG_AmmoError_Calibre Auto Const
 Message Property a0aLOADS_MESG_AmmoWarning_NoAmmo Auto Const
 
-; Caches for current calibre, filled when the player switches weapon (or to secondary fire mode)
-Ammo[] ammoArPlayerCalibre = None
-Keyword[] kywdArPlayerCalibre = None
-ObjectMod[] omodArPlayerCalibre = None
-Int iPlayerCalibreLength = 0
-Int iPlayerCalibreAmmoCurrent = -1
+; Caches for primary weapon calibre, filled when the player equips weapon
+Ammo[] ammoArPlayerPrimaryCalibre = None
+Keyword[] kywdArPlayerPrimaryCalibre = None
+ObjectMod[] omodArPlayerPrimaryCalibre = None
+Int iPlayerPrimaryCalibreLength = 0
+Int iPlayerPrimaryCalibreAmmoCurrent = -1
 
 ; Keywords showing that the weapon had previously had an ammo selected
 Keyword Property a0aLOADS_KYWD_AmmoLast Auto Const
@@ -144,11 +147,20 @@ FormList[] flstArSecondary = None
 Int iSecondaryLength = 0
 
 ObjectMod Property a0aLOADS_OMOD_Secondary_Default Auto Const
+; Has a secondary weapon available
+Keyword Property a0aLOADS_KYWD_Secondary Auto Const
 Keyword Property a0aLOADS_KYWD_Secondary_Active Auto Const
 
 ; For current weapon, recalculated on equip
 ObjectMod omodPlayerSecondary
 Bool bPlayerSecondaryActive = False
+
+; Caches for secondary weapon calibre, filled when the player equips weapon
+Ammo[] ammoArPlayerSecondaryCalibre = None
+Keyword[] kywdArPlayerSecondaryCalibre = None
+ObjectMod[] omodArPlayerSecondaryCalibre = None
+Int iPlayerSecondaryCalibreLength = 0
+Int iPlayerSecondaryCalibreAmmoCurrent = -1
 
 ; This weapon doesn't support secondary weapons
 Message Property a0aLOADS_MESG_SecondaryError_NotSupported Auto Const
@@ -472,7 +484,20 @@ EndEvent
 
 
 Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-    If (akBaseObject == weapPlayerCurrentWeapon)
+    ; ----------------------------------------
+    ; @brief Called when PlayerRef equips any item
+    ;
+    ; Handles updating the internal caches when the player switches weapon,
+    ; as well as applying the 'Last ammo' tags onto weapons
+    ;
+    ; @param akSender: Should always be PlayerRef.
+    ; @param akBaseObject: What was equipped, we only care if it's a weapon.
+    ; @param akReference: Can never be relied on in this context.
+    ; ----------------------------------------
+    If bScriptedReequip
+        bScriptedReequip = False
+
+    ElseIf (akBaseObject == weapPlayerCurrentWeapon)
         Debug.Trace("Loads_v2:OnItemEquipped: Force equip of "+akBaseObject.GetName()+" "+akBaseObject+" by function "+sForceEquipOrigin+", time "+Utility.GetCurrentRealTime())
 
     ElseIf akBaseObject.HasKeyword(ObjectTypeWeapon)
@@ -495,20 +520,15 @@ Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference ak
         Debug.Trace("Loads_v2:OnItemEquipped: Switched from "+weapPlayerCurrentWeapon.GetName()+" "+weapPlayerCurrentWeapon+" to "+akBaseObject.GetName()+" "+akBaseObject+" on "+PlayerRef+", time "+Utility.GetCurrentRealTime())
         weapPlayerCurrentWeapon = akBaseObject as Weapon
 
-        CallFunctionNoWait("ParallelCachePlayerAmmoType", varArFalse)
-        CallFunctionNoWait("ParallelCachePlayerPrimaryMode", None)
+        CallFunctionNoWait("ParallelCachePlayerPrimaryAmmoType", varArFalse)
+        CallFunctionNoWait("ParallelCachePlayerPrimaryMode", varArFalse)
         CallFunctionNoWait("ParallelCachePlayerSecondary", None)
         CallFunctionNoWait("ParallelCachePlayerScope", None)
 
         If PlayerRef.WornHasKeyword(a0aLOADS_KYWD_PrimaryModeLast)
-            iPlayerPrimaryModeLast = getPlayerPrimaryModeLast()
+            iPlayerPrimaryModeLast = GetPlayerPrimaryModeLastIndex()
         Else
             iPlayerPrimaryModeLast = 0
-        EndIf
-        If PlayerRef.WornHasKeyword(a0aLOADS_KYWD_AmmoLast)
-            iPlayerAmmoLast = getPlayerAmmoLast()
-        Else
-            iPlayerAmmoLast = 0
         EndIf
     EndIf
 EndEvent
@@ -550,45 +570,21 @@ Function ParallelCachePlayerScope()
             omodArPlayerScopeTypeBase = omodArScopeType_Normal
         Else
             ; If it had a special scope type... does it have an alt-type too?
-            Debug.Trace("Loads_v2:ParallelCachePlayerScope: Looking for alt scope in array of length "+iScopeTypeAltLength)
-            iLoop = 0
-            While (iLoop < iScopeTypeAltLength) && !omodArPlayerScopeTypeAlt
-                ; Loop through the alt-type keywords and see if they have any associated scope OMod lists
-                If PlayerRef.WornHasKeyword(kywdArScopeTypeAlt[iLoop])
-                    Debug.Trace("Loads_v2:ParallelCachePlayerScope: Found alt scope list "+flstArScopeTypeAlt[iLoop].GetName()+" "+flstArScopeTypeAlt[iLoop])
-                    omodArPlayerScopeTypeAlt = FillArrayFromFormList(flstArScopeTypeAlt[iLoop], new ObjectMod[16] as Form[]) as ObjectMod[]
-                Else
-                    iLoop += 1
-                EndIf
-            EndWhile
-            ; This doesn't have a default alt-type. If you haven't specified one, you don't have one.
+            Debug.Trace("Loads_v2:ParallelCachePlayerScope: Looking for alt scope")
+            FormList flstTemp = GetFormForWornKeyword(PlayerRef, kywdArScopeTypeAlt, flstArScopeTypeAlt as Form[], iScopeTypeAltLength) as FormList
+            If flstTemp
+                omodArPlayerScopeTypeAlt = FillArrayFromFormList(flstTemp, new ObjectMod[16] as Form[]) as ObjectMod[]
+            EndIf
         EndIf
 
         ; Loop through the player's weapon to see what the maximum zoom is
-        iLoop = 0
-        While (iLoop < iScopeZoomLength) && (iPlayerScopeZoomMax < 0)
-            If PlayerRef.WornHasKeyword(kywdArScopeZoomMax[iLoop])
-                iPlayerScopeZoomMax = iLoop
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
-
-        ; Loop through the player's weapon to see if it's currently zoomed out, and how far
-        If iScopeZoomLength > -1
-            iLoop = iScopeZoomLength
-            While (iLoop < iPlayerScopeZoomMax) && (iPlayerScopeZoomCurrent < 0)
-                If PlayerRef.WornHasKeyword(kywdArScopeZoomCurrent[iLoop])
-                    iPlayerScopeZoomCurrent = iLoop
-                Else
-                    iLoop += 1
-                EndIf
-            EndWhile
-            If iPlayerScopeZoomCurrent < 0
-                ; If it's not zoomed out, then the 'current zoom' is the maximum
-                iPlayerScopeZoomCurrent = iPlayerScopeZoomMax
-            EndIf
+        iPlayerScopeZoomMax = GetKeywordIndex(PlayerRef, kywdArScopeZoomMax, iScopeZoomLength)
+        iPlayerScopeZoomCurrent = GetKeywordIndex(PlayerRef, kywdArScopeZoomCurrent, iPlayerScopeZoomMax)
+        If iPlayerScopeZoomCurrent < 0
+            ; If it's not zoomed out, then the 'current zoom' is the maximum
+            iPlayerScopeZoomCurrent = iPlayerScopeZoomMax
         EndIf
+
         Debug.Trace("Loads_v2:ParallelCachePlayerScope: Finished checking scope - zoom "+iPlayerScopeZoomCurrent+"/"+iPlayerScopeZoomMax)
     EndIf
 EndFunction
@@ -604,23 +600,35 @@ Function ParallelCachePlayerSecondary()
     FormList flstSecondary = flstGetSecondaryLists(PlayerRef)
     Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Secondary list is "+flstSecondary)
     If flstSecondary
-        Debug.Trace("Loads_v2:ParallelCheckPlayerSecondary: Caching secondary mode - "+flstSecondary.GetName()+" "+flstSecondary)
+        Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Caching secondary mode - "+flstSecondary.GetName()+" "+flstSecondary)
         Int iPlayerSecondaryLength = (flstSecondary.GetAt(0) as FormList).GetSize()
-        Keyword[] kywdArPlayerSecondary = FillArrayFromFormList(flstSecondary.GetAt(0) as FormList, new Keyword[32] as Form[]) as Keyword[]
-        ObjectMod[] omodArPlayerSecondary = FillArrayFromFormList(flstSecondary.GetAt(1) as FormList, new ObjectMod[32] as Form[]) as ObjectMod[]
+        Keyword[] kywdArPlayerSecondary = FillArrayFromFormList(flstSecondary.GetAt(1) as FormList, new Keyword[32] as Form[]) as Keyword[]
+        Int iPlayerSecondary = GetKeywordIndex(PlayerRef, kywdArPlayerSecondary, iPlayerSecondaryLength)
 
-        Int iLoop = 0
-        While (iLoop < iPlayerSecondaryLength) && !omodPlayerSecondary
-            If PlayerRef.WornHasKeyword(kywdArPlayerSecondary[iLoop])
-                omodPlayerSecondary = omodArPlayerSecondary[iLoop]
+        If (iPlayerSecondary > 0)
+            omodPlayerSecondary = (flstSecondary.GetAt(2) as FormList).GetAt(iPlayerSecondary) as ObjectMod
+            FormList flstPlayerSecondary = (flstSecondary.GetAt(1) as FormList).GetAt(iPlayerSecondary) as FormList
+
+            bPlayerSecondaryActive = PlayerRef.WornHasKeyword(a0aLOADS_KYWD_Secondary_Active)
+
+            Debug.Trace("Loads_v2:ParallelCachePlayerSecondaryAmmoType: Caching calibre list - "+flstPlayerSecondary)
+            iPlayerPrimaryCalibreLength = (flstPlayerSecondary.GetAt(0) as FormList).GetSize()
+            ammoArPlayerSecondaryCalibre = FillArrayFromFormList(flstPlayerSecondary.GetAt(0) as FormList, new Ammo[32] as Form[]) as Ammo[]
+            kywdArPlayerSecondaryCalibre = FillArrayFromFormList(flstPlayerSecondary.GetAt(1) as FormList, new Keyword[32] as Form[]) as Keyword[]
+            omodArPlayerSecondaryCalibre = FillArrayFromFormList(flstPlayerSecondary.GetAt(2) as FormList, new ObjectMod[32] as Form[]) as ObjectMod[]
+            Debug.Trace("Loads_v2:ParallelCachePlayerSecondaryAmmoType: Cached calibre - "+iPlayerSecondaryCalibreLength+" types")
+
+            Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Cached secondary mode - "+omodPlayerSecondary.GetName()+" "+omodPlayerSecondary+", active? "+bPlayerSecondaryActive)
+            If bPlayerSecondaryActive
+                ; If the player's secondary is active, find the ammo from the lists
+                iPlayerSecondaryCalibreAmmoCurrent = GetKeywordIndex(PlayerRef, kywdArPlayerSecondaryCalibre, iPlayerSecondaryCalibreLength, aiDefault=0)
             Else
-                iLoop += 1
+                ; Otherwise, that last ammo is on the 'last ammo' tags
+                iPlayerSecondaryCalibreAmmoCurrent = GetKeywordIndex(PlayerRef, kywdArAmmoLast, kywdArAmmoLast.Length, aiDefault=0)
             EndIf
-        EndWhile
-        Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Cached secondary mode - "+omodPlayerSecondary.GetName()+" "+omodPlayerSecondary)
+            Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Current ammo type - "+iPlayerPrimaryCalibreAmmoCurrent+"/"+iPlayerPrimaryCalibreLength)
+        EndIf
 
-        bPlayerSecondaryActive = PlayerRef.WornHasKeyword(a0aLOADS_KYWD_Secondary_Active)
-        Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: Is secondary active? "+bPlayerSecondaryActive)
     Else
         Debug.Trace("Loads_v2:ParallelCachePlayerSecondary: No supported secondary modes")
     EndIf
@@ -634,7 +642,7 @@ Function ParallelCachePlayerPrimaryMode(bool bSkipFind = False)
     ;
     ; @param bSkipFind: Whether to skip looking for the mode - for if the weapon has the last mode recorded on it
     ; ----------------------------------------
-    Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: Caching for "+PlayerRef)
+    Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: Caching for "+PlayerRef)
     iPlayerPrimaryModeLength = 0
     iPlayerPrimaryModeCurrent = -1
 
@@ -643,135 +651,96 @@ Function ParallelCachePlayerPrimaryMode(bool bSkipFind = False)
 
     If flstPrimaryModes
         ; If they do, cache the arrays of keywords of the modes available (flstPrimaryModes[0]) and the corresponding omod for that keyword (flstPrimaryModes[1])
-        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: Caching modes from "+flstPrimaryModes)
-        iPlayerPrimaryModeLength = flstPrimaryModes.GetSize()
+        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: Caching modes from "+flstPrimaryModes)
+        iPlayerPrimaryModeLength = (flstPrimaryModes.GetAt(0) as FormList).GetSize()
         kywdArPlayerPrimaryModeAllowed = FillArrayFromFormList(flstPrimaryModes.GetAt(0) as FormList, new Keyword[32] as Form[]) as Keyword[]
         kywdArPlayerPrimaryModeSelected = FillArrayFromFormList(flstPrimaryModes.GetAt(1) as FormList, new Keyword[32] as Form[]) as Keyword[]
         omodArPlayerPrimaryModeSelected = FillArrayFromFormList(flstPrimaryModes.GetAt(2) as FormList, new ObjectMod[32] as Form[]) as ObjectMod[]
-        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: Cached modes - "+iPlayerPrimaryModeLength+" types")
+        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: Cached modes - "+iPlayerPrimaryModeLength+" types")
 
         ; Iterate over the primary mode keywords available to see if any of them are equipped
-        Int iLoop = 0
-        While (iLoop < iPlayerPrimaryModeLength) && (iPlayerPrimaryModeCurrent < 0)
-            Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: Checking "+iLoop+"/"+iPlayerPrimaryModeLength+" - "+kywdArPlayerPrimaryModeSelected[iLoop])
-            If PlayerRef.WornHasKeyword(kywdArPlayerPrimaryModeSelected[iLoop])
-                Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: "+PlayerRef+"  has keyword "+kywdArPlayerPrimaryModeSelected[iLoop])
-                iPlayerPrimaryModeCurrent = iLoop
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
+        iPlayerPrimaryModeCurrent = GetKeywordIndex(PlayerRef, kywdArPlayerPrimaryModeSelected, kywdArPlayerPrimaryModeSelected.Length, aiDefault=0)
 
-        ; If the player doesn't have a primary mode keyword equipped, then they're at 'default' mode (index 0)
-        If iPlayerPrimaryModeCurrent < 0
-            iPlayerPrimaryModeCurrent = 0
-        EndIf
-        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: Current primary mode - "+iPlayerPrimaryModeCurrent+"/"+iPlayerPrimaryModeLength)
+        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: Current primary mode - "+iPlayerPrimaryModeCurrent+"/"+iPlayerPrimaryModeLength)
 
     Else
-        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryModeType: No primary mode keywords found")
+        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryMode: No primary mode keywords found")
     EndIf
 EndFunction
 
 
-Function ParallelCachePlayerAmmoType(Bool bSkipFind = False)
+Function ParallelCachePlayerPrimaryAmmoType(Bool bSkipFind = False)
     ; ----------------------------------------
-    ; Examples the player's current weapon to find the ammo calibre,
+    ; Examines the player's primary weapon to find the ammo calibre,
     ; caches the formlists to arrays, then finds their current equipped ammo
     ;
     ; @param bSkipFind: Whether to skip looking for the ammo - for if the weapon has the last ammo type recorded on it
     ; ----------------------------------------
-    Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Caching for "+PlayerRef)
+    Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Caching for "+PlayerRef)
+    iPlayerPrimaryCalibreAmmoCurrent = -1
+    iPlayerPrimaryCalibreLength = -1
+    ammoArPlayerPrimaryCalibre = None
+    kywdArPlayerPrimaryCalibre = None
+    omodArPlayerPrimaryCalibre = None
 
-    If !bSkipFind
-        ; If we're caching the ammo as part of a secondary toggle, skip finding the type
-        iPlayerCalibreAmmoCurrent = -1
-    EndIf
-    iPlayerCalibreLength = 0
-    ammoArPlayerCalibre = None
-    kywdArPlayerCalibre = None
-    omodArPlayerCalibre = None
+    If weapPlayerCurrentWeapon.GetAmmo()
+        Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Weapon doesn't use ammo")
 
-    If !weapPlayerCurrentWeapon.GetAmmo()
-        Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Weapon doesn't use ammo")
-        Return
-    EndIf
+        FormList flstCalibre = flstGetCalibreLists(PlayerRef, weapPlayerCurrentWeapon)
+        If flstCalibre
+            Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Caching calibre list - "+flstCalibre)
+            iPlayerPrimaryCalibreLength = (flstCalibre.GetAt(0) as FormList).GetSize()
+            ammoArPlayerPrimaryCalibre = FillArrayFromFormList(flstCalibre.GetAt(0) as FormList, new Ammo[32] as Form[]) as Ammo[]
+            kywdArPlayerPrimaryCalibre = FillArrayFromFormList(flstCalibre.GetAt(1) as FormList, new Keyword[32] as Form[]) as Keyword[]
+            omodArPlayerPrimaryCalibre = FillArrayFromFormList(flstCalibre.GetAt(2) as FormList, new ObjectMod[32] as Form[]) as ObjectMod[]
+            Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Cached calibre - "+iPlayerPrimaryCalibreLength+" types")
 
-    FormList flstCalibre = flstGetCalibreLists(PlayerRef, weapPlayerCurrentWeapon)
-    If flstCalibre
-        Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Caching calibre list - "+flstCalibre)
-        iPlayerCalibreLength = (flstCalibre.GetAt(0) as FormList).GetSize()
-        ammoArPlayerCalibre = FillArrayFromFormList(flstCalibre.GetAt(0) as FormList, new Ammo[32] as Form[]) as Ammo[]
-        kywdArPlayerCalibre = FillArrayFromFormList(flstCalibre.GetAt(1) as FormList, new Keyword[32] as Form[]) as Keyword[]
-        omodArPlayerCalibre = FillArrayFromFormList(flstCalibre.GetAt(2) as FormList, new ObjectMod[32] as Form[]) as ObjectMod[]
-        Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Cached calibre - "+iPlayerCalibreLength+" types")
-
-        If !bSkipFind
-            ; If we haven't been told the last ammo as part of a weapon toggle, find it
-            Int iLoop = 0
-            While (iLoop < iPlayerCalibreLength) && (iPlayerCalibreAmmoCurrent < 0)
-                If PlayerRef.WornHasKeyword(kywdArPlayerCalibre[iLoop])
-                    iPlayerCalibreAmmoCurrent = iLoop
-                Else
-                    iLoop += 1
-                EndIf
-            EndWhile
-            If iPlayerCalibreAmmoCurrent < 0
-                iPlayerCalibreAmmoCurrent = 0
+            If bPlayerSecondaryActive
+                ; If the player's secondary is active, then the 'current' primary ammo is determined by the 'Last Ammo' keyword
+                iPlayerPrimaryCalibreAmmoCurrent = GetKeywordIndex(PlayerRef, kywdArAmmoLast, kywdArAmmoLast.Length, aiDefault=0)
+            Else
+                ; Look up the player's current ammo from the lists
+                iPlayerPrimaryCalibreAmmoCurrent = GetKeywordIndex(PlayerRef, kywdArPlayerPrimaryCalibre, iPlayerPrimaryCalibreLength, aiDefault=0)
             EndIf
-            Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Current ammo type - "+iPlayerCalibreAmmoCurrent+"/"+iPlayerCalibreLength)
+            Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Current ammo type - "+iPlayerPrimaryCalibreAmmoCurrent+"/"+iPlayerPrimaryCalibreLength)
+        Else
+            Debug.Trace("Loads_v2:ParallelCachePlayerPrimaryAmmoType: Not a supported calibre")
         EndIf
-    Else
-        Debug.Trace("Loads_v2:ParallelCachePlayerAmmoType: Not a supported calibre")
     EndIf
 EndFunction
 
 
-Int Function getPlayerAmmoLast()
+Int Function GetPlayerAmmoLastIndex()
     ; ----------------------------------------
-    ; When switching between primary <-> secondary, what was the last ammo type for the other mode?
+    ; What was the last ammo the player had equipped?
     ;
     ; @returns: The index of the last equipped ammo for the <primary if secondary/secondary if primary>,
     ;    or -1 if it's not recorded, or 0 if none found.
     ; ----------------------------------------
     If PlayerRef.WornHasKeyword(a0aLOADS_KYWD_AmmoLast)
-        Int iLoop = 0
-        While (iLoop < kywdArAmmoLast.length)
-            If PlayerRef.WornHasKeyword(kywdArAmmoLast[iLoop])
-                Return iLoop
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
+        Return GetKeywordIndex(PlayerRef, kywdArAmmoLast, kywdArAmmoLast.Length, aiDefault=0)
     Else
         Return -1
     EndIf
-    Return 0
 EndFunction
 
 
-Int Function getPlayerPrimaryModeLast()
+Int Function GetPlayerPrimaryModeLastIndex()
     ; ----------------------------------------
     ; @brief: When switching between primary <-> secondary, what was the last mode for the primary weapon?
+    ;
+    ; **Frames:** 1 + up to 1 per possible primary mode history.
+    ; **Parallelism:** No writes. Could be called in parallel, but needs a blocker
     ;
     ; @returns: The index of the last equipped mode for the primary weapon,
     ;    or -1 if it's not recorded, or 0 if none found.
     ; ----------------------------------------
     If PlayerRef.WornHasKeyword(a0aLOADS_KYWD_PrimaryModeLast)
-        Int iLoop = 0
-        While (iLoop < kywdArPrimaryModeLast.length)
-            If PlayerRef.WornHasKeyword(kywdArPrimaryModeLast[iLoop])
-                Return iLoop
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
+        Return GetKeywordIndex(PlayerRef, kywdArPrimaryModeLast, kywdArPrimaryModeLast.Length, aiDefault=0)
     Else
         Return -1
     EndIf
-    Return 0
 EndFunction
-
 
 
 FormList Function flstGetPrimaryModeLists(Actor akActor, Weapon weapEquipped)
@@ -787,18 +756,10 @@ FormList Function flstGetPrimaryModeLists(Actor akActor, Weapon weapEquipped)
     ; ----------------------------------------
     If akActor.WornHasKeyword(a0aLOADS_KYWD_PrimaryMode)
         Debug.Trace("Loads_v2:flstGetPrimaryModeLists: Has primary mode options, checking for keyword")
-        Int iLoop = 0
-        While (iLoop < iPrimaryModeLength)
-            Debug.Trace("Loads_v2:flstGetPrimaryModeLists: Checking "+iLoop+"/"+iPrimaryModeLength+" "+kywdArPrimaryMode[iLoop])
-            If akActor.WornHasKeyword(kywdArPrimaryMode[iLoop])
-                Debug.Trace("Loads_v2:flstGetPrimaryModeLists: "+akActor+" has "+kywdArPrimaryMode[iLoop]+", returning "+flstArPrimaryMode[iLoop])
-                Return flstArPrimaryMode[iLoop]
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
+        return GetFormForWornKeyword(PlayerRef, kywdArPrimaryMode, flstArPrimaryMode as Form[], iPrimaryModeLength) as FormList
+    Else
+        Return None
     EndIf
-    Return None
 EndFunction
 
 
@@ -810,19 +771,13 @@ FormList Function flstGetSecondaryLists(Actor akActor)
     ; **Parallelism:** No writes. Could be called in parallel, but needs a blocker
     ;
     ; @param akActor: The actor to check for.
-    ; @returns: The list containing the lists of KYWD & OMOD, or `None` if the weapon does not support secondaries
+    ; @returns: The list containing the lists of KYWD, OMOD & FLST, or `None` if the weapon does not support secondaries
     ; ----------------------------------------
-    Int iLoop = 0
-    While (iLoop < iSecondaryLength)
-        Debug.Trace("Loads_v2:flstGetSecondaryLists: Checking "+iLoop+"/"+iSecondaryLength+" "+kywdArSecondary[iLoop])
-        If akActor.WornHasKeyword(kywdArSecondary[iLoop])
-            Debug.Trace("Loads_v2:flstGetSecondaryLists: "+akActor+" has "+kywdArSecondary[iLoop]+", returning "+flstArSecondary[iLoop])
-            Return flstArSecondary[iLoop]
-        Else
-            iLoop += 1
-        EndIf
-    EndWhile
-    Return None
+    If akActor.WornHasKeyword(a0aLOADS_KYWD_Secondary)
+        Return GetFormForWornKeyword(PlayerRef, kywdArSecondary, flstArSecondary as Form[], iSecondaryLength) as FormList
+    Else
+        Return None
+    EndIf
 EndFunction
 
 
@@ -830,7 +785,7 @@ FormList Function flstGetCalibreLists(Actor akActor, Weapon weapEquipped)
     ; ----------------------------------------
     ; @brief: Gets the list of ammo types available for an actor's weapon
     ;
-    ; **Frames:** 1 + up to 1 per possible weapon with secondary weapon options
+    ; **Frames:** 1 + up to 1 per possible ammo for the current calibre
     ; **Parallelism:** No writes. Could be called in parallel, but needs a blocker
     ;
     ; @param akActor: The actor to check
@@ -840,25 +795,17 @@ FormList Function flstGetCalibreLists(Actor akActor, Weapon weapEquipped)
     ; ----------------------------------------
     If akActor.WornHasKeyword(dn_HasReceiver_Converted)
         Debug.Trace("Loads_v2:flstGetCalibreLists: Has a rechambered weapon, checking for keyword")
-        Int iLoop = 0
-        While (iLoop < iCalibreConvertedLength)
-            Debug.Trace("Loads_v2:flstGetCalibreLists: Checking conversion "+iLoop+"/"+iCalibreConvertedLength+" "+kywdArCalibreConverted[iLoop])
-            If akActor.WornHasKeyword(kywdArCalibreConverted[iLoop])
-                Debug.Trace("Loads_v2:flstGetCalibreLists: "+akActor+" has conversion "+kywdArCalibreConverted[iLoop]+", returning "+flstArCalibreConverted[iLoop])
-                Return flstArCalibreConverted[iLoop]
-            Else
-                iLoop += 1
-            EndIf
-        EndWhile
+        Return GetFormForWornKeyword(PlayerRef, kywdArCalibreConverted, flstArCalibreConverted as Form[], iCalibreConvertedLength) as FormList
 
     Else
         Debug.Trace("Loads_v2:flstGetCalibreLists: Has a normal weapon, looking up ammo for "+weapEquipped.GetName()+" "+weapEquipped)
         Int iIndex = ammoArCalibreBase.Find(weapEquipped.GetAmmo())
         If (iIndex > -1)
-            Return  flstArCalibreBase[iIndex]
+            Return flstArCalibreBase[iIndex]
+        Else
+            Return None
         EndIf
     EndIf
-    Return None
 EndFunction
 
 
@@ -906,17 +853,90 @@ EndFunction
 ;     Return ammoArPlayerCalibre.Find(InstanceData.GetAmmo(akWeaponInstance))
 ; EndFunction
 
+Int Function GetKeywordIndex(Actor akActor, Keyword[] akKeywords, Int aiLength, Int aiStart = 0, Int aiDefault = -1)
+    Int iLoop = aiStart
+    While (iLoop < aiLength)
+        If akActor.WornHasKeyword(akKeywords[iLoop])
+            Return iLoop
+        Else
+            iLoop += 1
+        EndIf
+    EndWhile
+    Return aiDefault
+EndFunction
 
-Bool Function bEquipNewAmmoType(Actor akActor, Weapon akWeap, ObjectMod akOmod, bool bLoud = False)
+
+Form Function GetFormForWornKeyword(Actor akActor, Keyword[] akKeywords, Form[] akForms, Int aiLength, Int aiStart = 0, Form akFormDefault = None)
+    Int iLoop = aiStart
+    While (iLoop < aiLength)
+        If akActor.WornHasKeyword(akKeywords[iLoop])
+            Return akForms[iLoop]
+        Else
+            iLoop += 1
+        EndIf
+    EndWhile
+    Return akFormDefault
+EndFunction
+
+
+Bool Function bEquipOMods(Actor akActor, Weapon akWeap, ObjectMod akOmod1, ObjectMod akOmod2, bool bLoud = False)
     ; ----------------------------------------
-    ; @brief: Switches to the specified ammunition type, or warns if it can't.
+    ; @brief: Applies two object mods to the actor's weapon, or warns if it can't
     ;
-    ; **Frames:** 1-2
+    ; If the second OMod can't be applied, it removes the first to leave the state as originally found.
+    ;
+    ; **Frames:** 5-7
     ; **Parallelism:** Changes actor state, do not call with NoWait
     ;
     ; @param akActor: The actor wanting to switch
     ; @param akWeap: Their equipped weapon
-    ; @param akOMod: The object mod corresponding to that ammo
+    ; @param akOMod1: The first object mod
+    ; @param akOMod2: The second object mod
+    ; @param bLoud: Whether to show warning messages
+    ; @returns: True if both OMods were successfully applied, false if not
+    ; ----------------------------------------
+    If (akActor.GetItemCount(akWeap) > 1)
+        If bLoud
+            a0aLOADS_MESG_Error_TooManyItems.Show()
+        EndIf
+    Else
+        bScriptedReequip = True
+        akActor.UnequipItem(akWeap, False, False)
+        If !akActor.AttachModToInventoryItem(akWeap, akOmod1)
+            ; Something went wrong with the first OMod application, show error message if loud
+            akActor.EquipItem(akWeap, False, False)
+            If bLoud
+                a0aLOADS_MESG_Error_Unknown.Show()
+            EndIf
+            return False
+
+        ElseIf !akActor.AttachModToInventoryItem(akWeap, akOmod2)
+            ; Something went wrong with this second OMod application,
+            ; so remove the first and show the error message if loud (i.e. called by player)
+            akActor.RemoveModFromInventoryItem(akWeap, akOmod1)
+            akActor.EquipItem(akWeap, False, False)
+            If bLoud
+                a0aLOADS_MESG_Error_Unknown.Show()
+            EndIf
+            return False
+        EndIf
+
+        akActor.EquipItem(akWeap, True, True)
+        return True
+    EndIf
+EndFunction
+
+
+Bool Function bEquipOMod(Actor akActor, Weapon akWeap, ObjectMod akOmod, bool bLoud = False)
+    ; ----------------------------------------
+    ; @brief: Applies an OMod (corresponding to e.g. ammo, mode), or warns if it can't.
+    ;
+    ; **Frames:** 1-4
+    ; **Parallelism:** Changes actor state, do not call with NoWait
+    ;
+    ; @param akActor: The actor wanting to switch
+    ; @param akWeap: Their equipped weapon
+    ; @param akOMod: The object mod to apply
     ; @param bLoud: Whether to show warning messages
     ; @returns: True if the OMod was successfully applied, false if not.
     ; ----------------------------------------
@@ -930,7 +950,7 @@ Bool Function bEquipNewAmmoType(Actor akActor, Weapon akWeap, ObjectMod akOmod, 
         akActor.AttachModToInventoryItem(akWeap, akOmod)
         return True
     ElseIf bLoud
-        a0aLOADS_MESG_AmmoError_Unknown.Show()
+        a0aLOADS_MESG_Error_Unknown.Show()
     EndIf
     return False
 EndFunction
@@ -952,17 +972,17 @@ Function AmmoCycleNext(Keyword akKywdRequired = None)
         Debug.Trace("Loads_v2:AmmoCycleNext: Cycling")
     EndIf
 
-    If iPlayerCalibreLength > 0
+    If iPlayerPrimaryCalibreLength > 0
         Ammo ammoNew = None
 
         ; What index does the next available ammo have?
         ; Starting at current ammo, go up until we find one.
-        Int iLoop = iPlayerCalibreAmmoCurrent + 1
+        Int iLoop = iPlayerPrimaryCalibreAmmoCurrent + 1
 
-        While (iLoop < iPlayerCalibreLength) && !ammoNew
-            If PlayerRef.GetItemCount(ammoArPlayerCalibre[iLoop]) > 0
-                If !akKywdRequired || ammoArPlayerCalibre[iLoop].HasKeyword(akKywdRequired)
-                    ammoNew = ammoArPlayerCalibre[iLoop]
+        While (iLoop < iPlayerPrimaryCalibreLength) && !ammoNew
+            If PlayerRef.GetItemCount(ammoArPlayerPrimaryCalibre[iLoop]) > 0
+                If !akKywdRequired || ammoArPlayerPrimaryCalibre[iLoop].HasKeyword(akKywdRequired)
+                    ammoNew = ammoArPlayerPrimaryCalibre[iLoop]
                 EndIf
             Else
                 iLoop += 1
@@ -972,10 +992,10 @@ Function AmmoCycleNext(Keyword akKywdRequired = None)
         If !ammoNew
             ; If we haven't found it, loop from the bottom up to see if it's there.
             iLoop = 0
-            While (iLoop < iPlayerCalibreAmmoCurrent) && !ammoNew
-                If PlayerRef.GetItemCount(ammoArPlayerCalibre[iLoop]) > 0
-                    If !akKywdRequired || ammoArPlayerCalibre[iLoop].HasKeyword(akKywdRequired)
-                        ammoNew = ammoArPlayerCalibre[iLoop]
+            While (iLoop < iPlayerPrimaryCalibreAmmoCurrent) && !ammoNew
+                If PlayerRef.GetItemCount(ammoArPlayerPrimaryCalibre[iLoop]) > 0
+                    If !akKywdRequired || ammoArPlayerPrimaryCalibre[iLoop].HasKeyword(akKywdRequired)
+                        ammoNew = ammoArPlayerPrimaryCalibre[iLoop]
                     EndIf
                 Else
                     iLoop += 1
@@ -986,10 +1006,10 @@ Function AmmoCycleNext(Keyword akKywdRequired = None)
         If ammoNew
             ; If we did find a new ammo type in inventory, equip it, or let the player know they're out!
             sForceEquipOrigin = "AmmoCycleNext"
-            If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, omodArPlayerCalibre[iLoop], True)
+            If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, omodArPlayerPrimaryCalibre[iLoop], True)
                 ; The equip was successful, so trigger the equip message and update the current ammo.
                 Debug.Notification(ammoNew.GetName()+" equipped")
-                iPlayerCalibreAmmoCurrent = iLoop
+                iPlayerPrimaryCalibreAmmoCurrent = iLoop
             EndIf
             sForceEquipOrigin = ""
         Else
@@ -1009,17 +1029,17 @@ Function AmmoCyclePrev(Keyword akKywdRequired = None)
     ; Entry-point for MCM.
     ; @param akKywdRequired: Optional tag to specify the type of ammo, e.g. AP, long-range.
     ; ----------------------------------------
-    If iPlayerCalibreLength > 0
+    If iPlayerPrimaryCalibreLength > 0
         Ammo ammoNew = None
 
         ; What index does the next available ammo have?
         ; Starting at current ammo, go down until we find one.
-        Int iLoop = iPlayerCalibreAmmoCurrent - 1
+        Int iLoop = iPlayerPrimaryCalibreAmmoCurrent - 1
 
         While (iLoop > -1) && !ammoNew
-            If PlayerRef.GetItemCount(ammoArPlayerCalibre[iLoop]) > 0
-                If !akKywdRequired || ammoArPlayerCalibre[iLoop].HasKeyword(akKywdRequired)
-                    ammoNew = ammoArPlayerCalibre[iLoop]
+            If PlayerRef.GetItemCount(ammoArPlayerPrimaryCalibre[iLoop]) > 0
+                If !akKywdRequired || ammoArPlayerPrimaryCalibre[iLoop].HasKeyword(akKywdRequired)
+                    ammoNew = ammoArPlayerPrimaryCalibre[iLoop]
                 EndIf
             Else
                 iLoop -= 1
@@ -1028,11 +1048,11 @@ Function AmmoCyclePrev(Keyword akKywdRequired = None)
 
         If !ammoNew
             ; If we haven't found it, loop from the bottom up to see if it's there.
-            iLoop = iPlayerCalibreLength - 1
-            While (iLoop > iPlayerCalibreAmmoCurrent) && !ammoNew
-                If PlayerRef.GetItemCount(ammoArPlayerCalibre[iLoop]) > 0
-                    If !akKywdRequired || ammoArPlayerCalibre[iLoop].HasKeyword(akKywdRequired)
-                        ammoNew = ammoArPlayerCalibre[iLoop]
+            iLoop = iPlayerPrimaryCalibreLength - 1
+            While (iLoop > iPlayerPrimaryCalibreAmmoCurrent) && !ammoNew
+                If PlayerRef.GetItemCount(ammoArPlayerPrimaryCalibre[iLoop]) > 0
+                    If !akKywdRequired || ammoArPlayerPrimaryCalibre[iLoop].HasKeyword(akKywdRequired)
+                        ammoNew = ammoArPlayerPrimaryCalibre[iLoop]
                     EndIf
                 Else
                     iLoop -= 1
@@ -1043,10 +1063,10 @@ Function AmmoCyclePrev(Keyword akKywdRequired = None)
         If ammoNew
             ; If we did find a new ammo type in inventory, equip it, or let the player know they're out!
             sForceEquipOrigin = "AmmoCyclePrev"
-            If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, omodArPlayerCalibre[iLoop], True)
+            If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, omodArPlayerPrimaryCalibre[iLoop], True)
                 ; The equip was successful, so trigger the equip message and update the current ammo.
                 Debug.Notification(ammoNew.GetName()+" equipped")
-                iPlayerCalibreAmmoCurrent = iLoop
+                iPlayerPrimaryCalibreAmmoCurrent = iLoop
             EndIf
             sForceEquipOrigin = ""
         Else
@@ -1072,7 +1092,7 @@ Function HotkeyPrimaryModeDefault()
 
     ElseIf iPlayerPrimaryModeLength > 0
         sForceEquipOrigin = "HotkeyPrimaryModeDefault"
-        If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_PrimaryModeType_Default)
+        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_PrimaryModeType_Default)
             Debug.Notification("Default mode")
         EndIf
         sForceEquipOrigin = ""
@@ -1116,7 +1136,7 @@ Function HotkeyPrimaryModeCycleNext()
 
         ; Equip the found primary mode
         sForceEquipOrigin = "HotkeyPrimaryModeCycleNext"
-        If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, omodNew, True)
+        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, omodNew, True)
             ; The equip was successful, so trigger the equip message and update the current ammo.
             Debug.Notification(omodNew.GetName()+" mode")
             iPlayerPrimaryModeCurrent = iLoop
@@ -1163,7 +1183,7 @@ Function HotkeyPrimaryModeCyclePrev()
 
         ; Equip the found primary mode
         sForceEquipOrigin = "HotkeyPrimaryModeCyclePrev"
-        If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, omodNew, True)
+        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, omodNew, True)
             ; The equip was successful, so trigger the equip message and update the current ammo.
             Debug.Notification(omodNew.GetName()+" mode")
             iPlayerPrimaryModeCurrent = iLoop
@@ -1197,19 +1217,26 @@ Function HotkeyContextDefault()
     ; ----------------------------------------
     ; Switches the current weapon to the default ammo, if it's a supported ammo type.
     ; ----------------------------------------
-    If iPlayerCalibreLength > 0
-        sForceEquipOrigin = "HotkeyContextDefault - Ammo"
-        If bEquipNewAmmoType(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
+    If !bPlayerSecondaryActive && iPlayerPrimaryCalibreLength > 0
+        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
             ; The equip was successful, so trigger the equip message and update the current ammo.
-            iPlayerCalibreAmmoCurrent = 0
-            Debug.Notification(ammoArPlayerCalibre[0].getName()+" equipped")
+            iPlayerPrimaryCalibreAmmoCurrent = 0
+            Debug.Notification(ammoArPlayerPrimaryCalibre[0].getName()+" equipped")
         EndIf
-        sForceEquipOrigin = ""
+
+    ElseIf bPlayerSecondaryActive && iPlayerSecondaryCalibreLength > 0
+        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
+            ; The equip was successful, so trigger the equip message and update the current ammo.
+            iPlayerSecondaryCalibreAmmoCurrent = 0
+            Debug.Notification(ammoArPlayerSecondaryCalibre[0].getName()+" equipped")
+        EndIf
+
     Else
         ; This weapon isn't in a supported ammo type!
         a0aLOADS_MESG_AmmoError_Calibre.Show()
     EndIf
 EndFunction
+
 
 Function HotkeyContextToggle()
     ; ----------------------------------------
@@ -1221,18 +1248,17 @@ Function HotkeyContextToggle()
             bPlayerSecondaryActive = False
             Debug.Notification(weapPlayerCurrentWeapon.GetName()+" active")
 
-            ParallelCachePlayerAmmoType(bSkipFind=True)
+            ; If the player's primary had a non-default ammo type equipped (or the secondary currently does)
+            If (iPlayerPrimaryCalibreAmmoCurrent != 0 || iPlayerSecondaryCalibreAmmoCurrent > 0)
+                ; Clear that by equipping a new mod in the ammo slot
+                Debug.Trace("Loads_v2:HotkeyContextToggle: Re-equipping secondary ammo "+iPlayerAmmoLast)
+                sForceEquipOrigin = "HotkeyContextToggle - Re-equipping correct primary ammo"
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryCalibre[iPlayerPrimaryCalibreAmmoCurrent])
+            EndIf
 
-            sForceEquipOrigin = "HotkeyContextToggle - Re-equipping correct primary ammo"
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerCalibre[iPlayerAmmoLast])
-
-            sForceEquipOrigin = "HotkeyContextToggle - Equipping reminder for secondary ammo"
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArAmmoLast[iPlayerCalibreAmmoCurrent])
-            iPlayerAmmoLast = iPlayerCalibreAmmoCurrent
-
-            If iPlayerPrimaryModeLast > 0
+            If iPlayerPrimaryModeCurrent > 0
                 ; If the player's primary had a mode selected, re-apply it (which clears the 'last mode' OMOD too)
-                sForceEquipOrigin = "HotkeyContextToggle - Re-equipping correct primary mode"
+                sForceEquipOrigin = "HotkeyContextToggle - Re-equipping correct primary mode "+iPlayerPrimaryModeLast
                 PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryModeSelected[iPlayerPrimaryModeLast])
             EndIf
         Else
@@ -1246,20 +1272,17 @@ Function HotkeyContextToggle()
             bPlayerSecondaryActive = True
             Debug.Notification(omodPlayerSecondary.GetName()+" active")
 
-            ParallelCachePlayerAmmoType(bSkipFind=True)
+            ; If the player's secondary last had a non-default ammo type equipped (or the primary currently does)
+            If (iPlayerPrimaryCalibreAmmoCurrent > 0 || iPlayerSecondaryCalibreAmmoCurrent > 0)
+                Debug.Trace("Loads_v2:HotkeyContextToggle: Re-equipping secondary ammo "+iPlayerAmmoLast)
+                sForceEquipOrigin = "HotkeyContextToggle: Re-equipping secondary ammo"
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerSecondaryCalibre[iPlayerSecondaryCalibreAmmoCurrent])
+            EndIf
 
-            sForceEquipOrigin = "HotkeyContextToggle: Re-equipping secondary ammo"
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerCalibre[iPlayerAmmoLast])
-
-            sForceEquipOrigin = "HotkeyContextToggle: Equipping reminder for primary ammo"
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArAmmoLast[iPlayerCalibreAmmoCurrent])
-            iPlayerAmmoLast = iPlayerCalibreAmmoCurrent
-
+            ; If the player's primary weapon has a mode selected, replace it with a "Remember the last primary mode" OMod
             If iPlayerPrimaryModeCurrent > 0
-                ; If the player's primary weapon has a mode selected, replace it with a "Remember the last primary mode" OMod
-                sForceEquipOrigin = "HotkeyContextToggle: Equipping reminder for primary mode"
+                sForceEquipOrigin = "HotkeyContextToggle: Equipping reminder for primary mode "+iPlayerPrimaryModeCurrent
                 PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPrimaryModeLast[iPlayerPrimaryModeCurrent])
-                iPlayerPrimaryModeLast = iPlayerPrimaryModeCurrent
             EndIf
         Else
             a0aLOADS_MESG_Error_TooManyItems.Show()
@@ -1350,10 +1373,13 @@ State ZoomedIn
             If bScopeTypeAlt
                 Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope active")
                 sForceEquipOrigin = "HotkeyContextToggle - Alternate scope off"
-                If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_Off)
+
+                If bEquipOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_Off, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent], bLoud=True)
+
+                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_Off)
                     Debug.Trace("Loads_v2:HotkeyContextToggle: Switched off alternate scope")
                     sForceEquipOrigin = "HotkeyContextToggle - Base scope zoom applied"
-                    PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent])
+                    ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent])
                     bScopeTypeAlt = False
                     a0aLOADS_MESG_ScopeTypeAlt_Off.Show()
                 Else
@@ -1363,10 +1389,13 @@ State ZoomedIn
             Else
                 Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope inactive")
                 sForceEquipOrigin = "HotkeyContextToggle - Alternate scope on"
-                If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_On)
+
+                If bEquipOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_On, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent], bLoud=True)
+
+                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_On)
                     Debug.Trace("Loads_v2:HotkeyContextToggle: Switched on alternate scope")
                     sForceEquipOrigin = "HotkeyContextToggle - Alternate scope zoom applied"
-                    PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent])
+                    ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent])
                     bScopeTypeAlt = True
                     a0aLOADS_MESG_ScopeTypeAlt_On.Show()
                 Else
