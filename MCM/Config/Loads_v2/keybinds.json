@@ -43,7 +43,7 @@
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "AmmoCycleNext",
+        "function": "HotkeyAmmoCycleType",
         "params": ["Loads_v2.esm|832"]
       }
     },
@@ -53,7 +53,7 @@
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "AmmoCycleNext",
+        "function": "HotkeyAmmoCycleType",
         "params": ["Loads_v2.esm|833"]
       }
     },
@@ -63,7 +63,7 @@
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "AmmoCycleNext",
+        "function": "HotkeyAmmoCycleType",
         "params": ["Loads_v2.esm|835"]
       }
     },
@@ -73,7 +73,7 @@
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "AmmoCycleNext",
+        "function": "HotkeyAmmoCycleType",
         "params": ["Loads_v2.esm|836"]
       }
     },
@@ -83,7 +83,7 @@
       "action": {
         "type": "CallFunction",
         "form": "Loads_v2.esm|500A",
-        "function": "AmmoCycleNext",
+        "function": "HotkeyAmmoCycleType",
         "params": ["Loads_v2.esm|834"]
       }
     },

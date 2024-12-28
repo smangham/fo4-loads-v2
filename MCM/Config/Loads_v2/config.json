@@ -7,12 +7,20 @@
   ],
   "content": [
     {
-      "text": "Loads of Ammo adds a framework for equipping new types of ammunition, changing your scope type and zoom, and even switching weapons to secondary fire modes. Set the hotkeys for each action in each section.",
+      "text": "Loads of Ammo adds a framework for equipping new types of ammunition, changing your scope type and zoom, and even switching weapons to secondary fire modes.",
       "type": "text"
     },
     {
-      "text": "The main, context-sensitive hotkeys control your ammunition type and secondary weapon mode when not zoomed in, and your scope zoom and mode when using a scope.",
+      "text": "The main, context-sensitive hotkeys control your ammunition type and secondary weapon mode  when not zoomed in, and your scope zoom and mode when using a scope.",
       "type": "text"
+    },
+    {
+      "text": "Build an Ammunition Workbench to create variants out of any ammo type you have in inventory. Apply modifications with the (Secondary) tag to use secondary modes, and use the zoom mode toggle to switch on or off night vision.",
+      "type": "text"
+    },
+    {
+      "text": "Hotkeys",
+      "type": "section"
     },
     {
       "id": "loadsContextNext",
@@ -41,6 +49,30 @@
       "type": "hotkey",
       "help": "Load the default type of ammunition for your weapon / Go to maximum zoom.",
       "valueOptions": {"allowModifierKeys": true}
+    },
+    {
+      "text": "Configuration",
+      "type": "section"
+    },
+    {
+      "id": "bHideLoadsWorkbench:Display",
+      "text": "Hide Loads v2 ammo workbench",
+      "type": "switcher",
+      "help": "Select this if you're using a patch that supports a different ammunition workbench mod.",
+      "groupControl": 1,
+      "valueOptions": {
+        "sourceType": "ModSettingBool"
+      }
+    },
+    {
+      "id": "bHideHotkeyConsumables:Display",
+      "text": "Hide hotkey consumables",
+      "type": "switcher",
+      "help": "Select this if you want to hide the 'standard' hotkey consumable items you can build.",
+      "groupControl": 1,
+      "valueOptions": {
+        "sourceType": "ModSettingBool"
+      }
     }
   ],
   "pages": [
@@ -100,16 +132,12 @@
       "pageDisplayName": "Modes",
       "content": [
         {
-          "text": "Some weapons have a selectable modes. Modify a weapon to enable this - usually by equipping an automatic receiver or silencer with the (mode) tag. Secondary weapons do not have switchable modes.",
+          "text": "Some weapons have a selectable modes for their primary fire. Modify a weapon to enable this - usually by equipping an automatic receiver or silencer with the (mode) tag. Secondary weapons do not have switchable modes.",
           "type": "text"
         },
         {
-          "text": "Mode Select Hotkeys",
+          "text": "Hotkeys",
           "type": "section"
-        },
-        {
-          "text": "These hotkeys cycle between available modes for a weapon. Only one mode is active at a time.",
-          "type": "text"
         },
         {
           "id": "loadsPrimaryModeCycleNext",
@@ -138,11 +166,7 @@
       "pageDisplayName": "Debug",
       "content": [
         {
-          "text": "Debug",
-          "type": "Title"
-        },
-        {
-          "text": "These debug commands shouldn't be needed. If you add/remove mods adding new calibres and ammo types, and find you can't use them, try running these.",
+          "text": "If you add/remove mods adding new calibres and ammo types, and find you can't use them, try rebuilding the caches.",
           "type": "text"
         },
         {
@@ -154,6 +178,21 @@
             "sourceType": "PropertyValueBool",
             "sourceForm": "Loads_v2.esm|500A",
             "propertyName": "bRebuildCache"
+          }
+        },
+        {
+          "text": "If a weapon is 'stuck' in one particular mode, and unequipping then re-equipping it doesn't help, try resetting it.",
+          "type": "text"
+        },
+        {
+          "id": "loadsResetWeapon",
+          "text": "Reset weapon",
+          "type": "switcher",
+          "help": "Resets the ammo, primary and secondary modes of the player's current weapon when the menu is closed.",
+          "valueOptions": {
+            "sourceType": "PropertyValueBool",
+            "sourceForm": "Loads_v2.esm|500A",
+            "propertyName": "bResetWeapon"
           }
         }
       ]
