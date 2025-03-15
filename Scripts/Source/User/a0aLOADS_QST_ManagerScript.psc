@@ -27,6 +27,7 @@ Var[] varArFalse = None
 ; Used to prevent repeated clicks of rebuild cache
 Bool Property bRebuildCache = False Auto
 Bool Property bResetWeapon = False Auto
+Bool Property bRevertPatches = False Auto
 ; Used when parallelising cache rebuilds
 ; Int Property iParallelCachesProcessing = -1 Auto
 ; Int Property iParallelCachesRebuilt = 0 Auto
@@ -119,11 +120,11 @@ Keyword Property HasScope Auto Const
 
 ; Used for switching to secondary scopes
 Bool bScopeTypeAlt = False
-Keyword Property a0aLOADS_KYWD_ScopeTypeAlt_On Auto Const
-ObjectMod Property a0aLOADS_OMOD_ScopeTypeAlt_Off Auto Const
-ObjectMod Property a0aLOADS_OMOD_ScopeTypeAlt_On Auto Const
-Message Property a0aLOADS_MESG_ScopeTypeAlt_Off Auto Const
-Message Property a0aLOADS_MESG_ScopeTypeAlt_On Auto Const
+Keyword Property a0aLOADS_KYWD_ScopeType_Alt Auto Const
+ObjectMod Property a0aLOADS_OMOD_ScopeType_Base Auto Const
+ObjectMod Property a0aLOADS_OMOD_ScopeType_Alt Auto Const
+Message Property a0aLOADS_MESG_ScopeType_Base Auto Const
+Message Property a0aLOADS_MESG_ScopeType_Alt Auto Const
 
 ; The set of OMods applied when the player switches zoom, cached on equip
 ObjectMod[] omodArPlayerScopeTypeBase = None
@@ -281,6 +282,7 @@ Function RegisterForEvents(Bool bLoud = False)
     RegisterForRemoteEvent(PlayerRef, "OnPlayerLoadGame")
     RegisterForMenuOpenCloseEvent("PauseMenu")
     RegisterForMenuOpenCloseEvent("ScopeMenu")
+    RegisterForMenuOpenCloseEvent("ExamineMenu")
     RegisterForExternalEvent("OnMCMOpen|Loads_v2", "OnMCMOpen")
     RegisterForExternalEvent("OnMCMSettingChange|Loads_v2", "OnMCMSettingChange")
     Debug.Trace("Loads_v2:RegisterForEvents: Registered")
@@ -309,6 +311,9 @@ Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
         Else
             GotoState("")
         EndIf
+    ElseIf asMenuName == "ExamineMenu"
+        CacheFormLists()
+
     ElseIf asMenuName == "PauseMenu"
         If !abOpening && bResetWeapon
             DebugResetWeapon()
@@ -316,8 +321,61 @@ Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
         If !abOpening && bRebuildCache
             CacheFormLists(bForce=True)
         EndIf
+        If !abOpening && bRevertPatches
+            DebugRevertPatches()
+        EndIf
     EndIf
 endEvent
+
+
+CustomEvent OnLoadsRevertPatches
+
+Function DebugRevertPatches()
+    ; ----------------------------------------
+    ; Resets *all* the form lists by removing script-added entries,
+    ; then requests the patches re-add their content.
+    ;
+    ; **Frames:** Lots. Expect this to take seconds.
+    ; ----------------------------------------
+    FormList flstLoop = None
+    Int iLoop = -1
+
+    a0aLOADS_FLST_ScopeTypeBase_KYWD.Revert()
+    a0aLOADS_FLST_ScopeTypeBase_FLST.Revert()
+    a0aLOADS_FLST_ScopeTypeAlt_KYWD.Revert()
+    a0aLOADS_FLST_ScopeTypeAlt_FLST.Revert()
+
+    iLoop = a0aLOADS_FLST_CalibreBase_FLST.GetSize()
+    While(iLoop > -1)
+        flstLoop = a0aLOADS_FLST_CalibreBase_FLST.GetAt(iLoop) as FormList
+        (flstLoop.GetAt(0) as FormList).Revert()
+        (flstLoop.GetAt(1) as FormList).Revert()
+    endWhile
+    a0aLOADS_FLST_CalibreBase_AMMO.Revert()
+    a0aLOADS_FLST_CalibreBase_FLST.Revert()
+    a0aLOADS_FLST_CalibreConverted_KYWD.Revert()
+    a0aLOADS_FLST_CalibreConverted_FLST.Revert()
+
+    iLoop = a0aLOADS_FLST_Secondary_FLST.GetSize()
+    While(iLoop > -1)
+        flstLoop = a0aLOADS_FLST_Secondary_FLST.GetAt(iLoop) as FormList
+        (flstLoop.GetAt(0) as FormList).Revert()
+        (flstLoop.GetAt(1) as FormList).Revert()
+    endWhile
+    a0aLOADS_FLST_Secondary_KYWD.Revert()
+    a0aLOADS_FLST_Secondary_FLST.Revert()
+
+    iLoop = a0aLOADS_FLST_PrimaryMode_FLST.GetSize()
+    While(iLoop > -1)
+        flstLoop = a0aLOADS_FLST_PrimaryMode_FLST.GetAt(iLoop) as FormList
+        (flstLoop.GetAt(0) as FormList).Revert()
+        (flstLoop.GetAt(1) as FormList).Revert()
+    endWhile
+    a0aLOADS_FLST_PrimaryMode_KYWD.Revert()
+    a0aLOADS_FLST_PrimaryMode_FLST.Revert()
+
+    SendCustomEvent("OnLoadsRevertPatches", None)
+EndFunction
 
 
 Function DebugResetWeapon()
@@ -594,7 +652,7 @@ Function ParallelCachePlayerScope()
         Return
     ElseIf PlayerRef.WornHasKeyword(HasScope)
         ; Check if it's currently in alternate mode
-        bScopeTypeAlt = PlayerRef.WornHasKeyword(a0aLOADS_KYWD_ScopeTypeAlt_On)
+        bScopeTypeAlt = PlayerRef.WornHasKeyword(a0aLOADS_KYWD_ScopeType_Alt)
         Debug.Trace("Loads_v2:ParallelCachePlayerScope: Player weapon has scope, is alt scope active? "+bScopeTypeAlt)
 
         ; If the player has a scope, sift through the list of special scope types and find the list of zoom OMods associated
@@ -1677,13 +1735,13 @@ State ZoomedIn
                 Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope active")
 
 
-                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_Off, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent], bLoud=True)
+                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent], bLoud=True)
 
-                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_Off)
+                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base)
                     Debug.Trace("Loads_v2:HotkeyContextToggle: Switched off alternate scope")
                     ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent])
                     bScopeTypeAlt = False
-                    a0aLOADS_MESG_ScopeTypeAlt_Off.Show()
+                    a0aLOADS_MESG_ScopeType_Base.Show()
                 Else
                     a0aLOADS_MESG_Error_TooManyItems.Show()
                 EndIf
@@ -1691,13 +1749,13 @@ State ZoomedIn
             Else
                 Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope inactive")
 
-                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_On, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent], bLoud=True)
+                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent], bLoud=True)
 
-                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeTypeAlt_On)
+                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt)
                     Debug.Trace("Loads_v2:HotkeyContextToggle: Switched on alternate scope")
                     ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent])
                     bScopeTypeAlt = True
-                    a0aLOADS_MESG_ScopeTypeAlt_On.Show()
+                    a0aLOADS_MESG_ScopeType_Alt.Show()
                 Else
                     a0aLOADS_MESG_Error_TooManyItems.Show()
                 EndIf
