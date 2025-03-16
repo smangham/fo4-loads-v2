@@ -18,7 +18,7 @@ Each new variant requires 4 (or 5) things:
   * The ammo that an NPC will have in inventory if they spawn with a weapon with the `OMOD` applied.
   * In the example, `_TEMPLATE_LL_Ammo10mm_NewVariant`.
 * **Crafting Recipe (`COBJ`, optional)**
-  * The ammo that an NPC will have in inventory if they spawn with a weapon with the `OMOD` applied.
+  * The recipe used to build the `AMMO` variant.
   * In the example, `_TEMPLATE_COBJ_Ammo10mm_NewVariant`.
 
 If you want to make a new ammo variant for an existing calibre,

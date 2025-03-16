@@ -3,7 +3,7 @@
 ## Introduction
 
 Build an ammunition workbench and some ammo variants,
-then either set the hotkeys using MCM or build hotkey items there.
+then either set the hotkeys using the **Loads v2** [MCM menu](https://www.nexusmods.com/fallout4/mods/21497) or build hotkey items there.
 See the [Getting Started guide](Docs/Loads_v2/User/index.md) if you want full instructions!
 
 ## Controls
@@ -16,3 +16,7 @@ There's also hotkeys to equip ammo variants with certain qualities, e.g. anti-ar
 ![Controls: Primary Mode](Docs/Loads_v2/Assets/instructions-mode.png)
 
 Primary modes vary wildly by weapon - for regular ballistic guns it's usually silencers and automatic modes, but energy weapons can even turn on/off shotgun modes or charged attacks.
+
+## Modding
+
+If you want to use this framework to add your own ammo calibres, ammo variants, new secondary weapons, scope types or firing modes [check out the modding guide](Docs/Loads_v2/Modding/index.md).
