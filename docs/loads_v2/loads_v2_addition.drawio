@@ -1,0 +1,200 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
+  <diagram name="Page-1" id="Z3C1NiTa7ygTj1chKMIx">
+    <mxGraphModel dx="792" dy="1180" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-39" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="320" width="360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-17" value="Rechamber Keyword List" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-18" value="Type List for Rechamber" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry x="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-19" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;dn_HasRechamber_10mm&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-20" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;dn_HasRechamber_44&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry y="80" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-21" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;dn_HasRechamber_Missile&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry y="120" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-22" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry y="160" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-23" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry x="160" y="40" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-24" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry x="160" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-25" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry x="160" y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-26" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-39">
+          <mxGeometry x="160" y="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-40" value="" style="group;strokeWidth=0;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="480" y="320" width="360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-5" value="Base Ammo List" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-6" value="&lt;div&gt;Type List for Base Ammo&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry x="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-9" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;Ammo10mm&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-10" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;Ammo44&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry y="80" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-11" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;AmmoMissile&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry y="120" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-12" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry y="160" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-13" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry x="160" y="40" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-14" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry x="160" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-15" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_FLST_Ammo10mm_LISTS&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry x="160" y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-16" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-40">
+          <mxGeometry x="160" y="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-41" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="640" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-32" value="MyAmmo Type Lists&lt;div&gt;&lt;font color=&quot;#67ab9f&quot; size=&quot;1&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;MyMod_FLST_MyAmmo_LISTS&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-41">
+          <mxGeometry width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-33" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;MyMod_FLST_MyAmmo_AMMO&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-41">
+          <mxGeometry y="40" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-37" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;MyMod_FLST_MyAmmo_KYWD&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-41">
+          <mxGeometry y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-38" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;MyMod_FLST_MyAmmo_OMOD&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-41">
+          <mxGeometry y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-53" value="MyAmmo Type Ammo&lt;div&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;&lt;b&gt;MyMod_FLST_MyAmmo_AMMO&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="280" y="800" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-54" value="MyAmmo Type Keyword&lt;div&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;&lt;b&gt;MyMod_FLST_MyAmmo_KYWD&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="440" y="800" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-55" value="&lt;font face=&quot;Lucida Console&quot; color=&quot;#67ab9f&quot;&gt;MyMod_MyAmmo&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="840" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-135" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-56" target="u2kjIfs1mv_Wrb9bzfoM-126">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-56" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;;&quot;&gt;MyMod_MyAmmo_&lt;/span&gt;&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;AP&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="880" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-57" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;;&quot;&gt;MyMod_MyAmmo_DU&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="920" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-58" value="&lt;font color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="960" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-59" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_KYWD_AmmoDefault&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="840" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-60" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;;&quot;&gt;MyMod_KYWD_MyAmmo&lt;/span&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;_AP&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="880" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-61" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;;&quot;&gt;MyMod_KYWD_MyAmmo&lt;/span&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;_DI&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="920" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-62" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="960" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-63" value="MyAmmo Type Obj. Modifier&lt;div&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;&lt;b&gt;MyMod_FLST_MyAmmo_OMOD&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="600" y="800" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-64" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;_LOADS_OMOD_AmmmoDefault&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="600" y="840" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-133" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-65" target="u2kjIfs1mv_Wrb9bzfoM-122">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="900" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-65" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;MyMod_OMOD_MyAmmo_AP&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="600" y="880" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-66" value="&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;MyMod_OMOD_MyAmmo_DU&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="600" y="920" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-67" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;...&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="600" y="960" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-118" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;MyMod_MyRechamber&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-119" target="u2kjIfs1mv_Wrb9bzfoM-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-119" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b&gt;MyMod_FLST_MyAmmo_LISTS&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="520" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-120" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b style=&quot;&quot;&gt;MyAmmo&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="520" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-129" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-121" target="u2kjIfs1mv_Wrb9bzfoM-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-121" value="&lt;font size=&quot;1&quot; color=&quot;#67ab9f&quot; face=&quot;Lucida Console&quot;&gt;&lt;b&gt;MyMod_MyAmmo_LISTS&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="520" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-122" value="MyAmmo AP Type Equipped&lt;div&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;&lt;b&gt;MyMod_OMOD_MyAmmo_AP&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1040" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-123" value="&lt;font size=&quot;1&quot; face=&quot;Lucida Console&quot; color=&quot;#67ab9f&quot;&gt;&lt;b&gt;Add Keyword:&lt;/b&gt; MyMod_KYWD_MyAmmp_AP&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1080" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-124" value="&lt;font size=&quot;1&quot; face=&quot;Lucida Console&quot; color=&quot;#67ab9f&quot;&gt;&lt;b&gt;Set Ammo:&lt;/b&gt; &lt;br&gt;MyMod_MyAmmp_AP&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-125" value="&lt;font face=&quot;Helvetica&quot; color=&quot;#000000&quot; size=&quot;1&quot;&gt;&lt;b style=&quot;&quot;&gt;Whatever effect your ammo type has&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-130" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-38" target="u2kjIfs1mv_Wrb9bzfoM-63">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-131" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-37" target="u2kjIfs1mv_Wrb9bzfoM-54">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-132" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u2kjIfs1mv_Wrb9bzfoM-33" target="u2kjIfs1mv_Wrb9bzfoM-53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-134" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="120" y="1040" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-126" value="MyAmmo AP Ammo&lt;div&gt;&lt;span style=&quot;color: rgb(103, 171, 159); font-family: &amp;quot;Lucida Console&amp;quot;; font-size: x-small;&quot;&gt;&lt;b&gt;MyMod_MyAmmo&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-134">
+          <mxGeometry width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-127" value="&lt;font size=&quot;1&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;font style=&quot;font-family: Helvetica;&quot; color=&quot;#000000&quot;&gt;Optionally, add keywords to describe the type, e.g. &lt;/font&gt;&lt;font face=&quot;Lucida Console&quot; style=&quot;&quot; color=&quot;#67ab9f&quot;&gt;_LOADS_KYWD_AmmoType_AntiArmour&lt;/font&gt;&lt;/b&gt;&lt;/font&gt;&lt;b style=&quot;font-size: x-small;&quot;&gt;&lt;font color=&quot;#000000&quot;&gt;. This is for quick-switching and (future) AI use.&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="u2kjIfs1mv_Wrb9bzfoM-134">
+          <mxGeometry y="40" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-136" value="Boxes in blue are from &lt;font face=&quot;Lucida Console&quot;&gt;LOADS_v2.esm&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="240" y="160" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="u2kjIfs1mv_Wrb9bzfoM-137" value="Boxes in red are from &lt;font face=&quot;Lucida Console&quot;&gt;YourMod.esp/m&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="480" y="160" width="160" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,18 @@
+![# Loads of Ammo v2](art/title.png)
+
+## Introduction
+
+Build an ammunition workbench and some ammo variants,
+then either set the hotkeys using MCM or build hotkey items there.
+See the [Getting Started guide](Docs/Loads_v2/User/index.md) if you want full instructions!
+
+## Controls
+
+![Controls: Unscoped](Docs/Loads_v2/Assets/instructions-unscoped.png)
+![Controls: Scoped](Docs/Loads_v2/Assets/instructions-scope.png)
+
+There's also hotkeys to equip ammo variants with certain qualities, e.g. anti-armour or long-range, if you have them in your inventory.
+
+![Controls: Primary Mode](Docs/Loads_v2/Assets/instructions-mode.png)
+
+Primary modes vary wildly by weapon - for regular ballistic guns it's usually silencers and automatic modes, but energy weapons can even turn on/off shotgun modes or charged attacks.

@@ -84,12 +84,12 @@
           "type": "text"
         },
         {
-          "text": "Ammo Type Hotkeys",
-          "type": "section"
+          "text": "Ammo types have 'tags' describing their behaviour. In addition to cycling back and forth, you can jump to any ammo you have with a specific tag using a hotkey.",
+          "type": "text"
         },
         {
-          "text": "These hotkeys equip specific categories of ammo, by tags set on them.",
-          "type": "text"
+          "text": "Ammo Type Hotkeys",
+          "type": "section"
         },
         {
           "id": "loadsAmmoType_AntiArmour",
@@ -166,7 +166,11 @@
       "pageDisplayName": "Debug",
       "content": [
         {
-          "text": "If you add/remove mods adding new calibres and ammo types, and find you can't use them, try rebuilding the caches.",
+          "text": "Rebuild Caches",
+          "type": "section"
+        },
+        {
+          "text": "If you add/remove mods adding new calibres and ammo variants, and find you can't use them, try rebuilding the caches.",
           "type": "text"
         },
         {
@@ -181,7 +185,11 @@
           }
         },
         {
-          "text": "If a weapon is 'stuck' in one particular mode, and unequipping then re-equipping it doesn't help, try resetting it.",
+          "text": "Reset Current Weapon",
+          "type": "section"
+        },
+        {
+          "text": "If a weapon is 'stuck' on one particular ammo variant or mode, and unequipping then re-equipping it doesn't help, try resetting it.",
           "type": "text"
         },
         {
@@ -193,6 +201,25 @@
             "sourceType": "PropertyValueBool",
             "sourceForm": "Loads_v2.esm|500A",
             "propertyName": "bResetWeapon"
+          }
+        },
+        {
+          "text": "Reset Patches",
+          "type": "section"
+        },
+        {
+          "text": "If a scripted patch to add content was written wrong, you can use revert and reapply to fix it once they release a patch.",
+          "type": "text"
+        },
+        {
+          "id": "loadsRevertPatches",
+          "text": "Revert and reapply scripted patches",
+          "type": "switcher",
+          "help": "Clears all scripted patches adding calibres, ammo e.t.c. from other mods and re-applies them when the menu is closed. This is a slow process.",
+          "valueOptions": {
+            "sourceType": "PropertyValueBool",
+            "sourceForm": "Loads_v2.esm|500A",
+            "propertyName": "bRevertPatches"
           }
         }
       ]

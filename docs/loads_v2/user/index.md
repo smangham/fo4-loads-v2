@@ -109,7 +109,7 @@ You should be able to switch ammo for any weapon that uses a vanilla calibre wit
 However, this functionality uses the `NULL` modification slot, which some other mods do too.
 If you get a conflict, you can fix it with a patch.
 
-Rechambers/ammo type conversions rely on keywords on the object modification.
+Rechambers/ammunition conversions rely on keywords on the object modification.
 If you find a rechamber doesn't stick (switching ammo starts equipping variants of the *default* ammo),
 then you can fix it with a patch.
 
