@@ -1,4 +1,5 @@
-![# Loads of Ammo v2](art/title.png)
+![# Loads of Ammo v2](Docs/Loads_v2/Assets/title.png)
+Create variant ammunition types and switch them on the fly. Also allows you to adjust your scope type and zoom, use a range of alternate fire modes, or even equip secondary weapons like under-barrel grenade launchers.
 
 ## Introduction
 
