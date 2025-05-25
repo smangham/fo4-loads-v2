@@ -406,7 +406,6 @@ Function DebugResetWeapon()
 EndFunction
 
 
-
 Function CacheFormLists(Bool bForce = False)
     ; ----------------------------------------
     ; Update the ammo array caches from their base formlists.
@@ -530,6 +529,12 @@ EndFunction
 
 
 Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
+    Utility.Wait(0.5);
+    if !PlayerRef.GetEquippedWeapon()
+        Debug.Trace("Loads_v2:OnItemUnequipped: Player genuinely has no weapon equipped.")
+        weapPlayerCurrentWeapon = None
+    EndIf
+
     ; If !bLoadsForcedEquip && (akBaseObject == weapPlayerCurrentWeapon)
     ;     ; weapPlayerCurrentWeapon = None
 
@@ -634,6 +639,7 @@ Function ParallelCachePlayerScope()
         ; If the player has a scope, sift through the list of special scope types and find the list of zoom OMods associated
         FormList flstTemp = GetFormForWornKeyword(PlayerRef, kywdArScopeTypeBase, flstArScopeTypeBase as Form[], iScopeTypeBaseLength) as FormList
         If flstTemp
+            Debug.Trace("Loads_v2:ParallelCachePlayerScope: Found base scope "+flstTemp)
             omodArPlayerScopeTypeBase = FillArrayFromFormList(flstTemp, new ObjectMod[16] as Form[]) as ObjectMod[]
         EndIf
 
@@ -645,6 +651,7 @@ Function ParallelCachePlayerScope()
             Debug.Trace("Loads_v2:ParallelCachePlayerScope: Looking for alt scope")
             flstTemp = GetFormForWornKeyword(PlayerRef, kywdArScopeTypeAlt, flstArScopeTypeAlt as Form[], iScopeTypeAltLength) as FormList
             If flstTemp
+                Debug.Trace("Loads_v2:ParallelCachePlayerScope: Found alt scope "+flstTemp)
                 omodArPlayerScopeTypeAlt = FillArrayFromFormList(flstTemp, new ObjectMod[16] as Form[]) as ObjectMod[]
             EndIf
         EndIf
@@ -756,10 +763,12 @@ Function ParallelCachePlayerPrimaryMode()
     omodArPlayerPrimaryModeSelected = None
 
     If !weapPlayerCurrentWeapon
+        Debug.Trace("Load_v2:ParallelCachePlayerPrimaryMode: No weapon equipped.")
         Return
     EndIf
 
     ; Lookup if the player has any of kywdArPrimaryModes: This means they have the flstArPrimaryModes at the same index available.
+    Debug.Trace("Load_v2:ParallelCachePlayerPrimaryMode: Caching weapon "+weapPlayerCurrentWeapon)
     FormList flstPrimaryModes = GetPrimaryModeLists(PlayerRef, weapPlayerCurrentWeapon)
 
     If flstPrimaryModes
@@ -803,11 +812,12 @@ Function ParallelCachePlayerPrimaryAmmoType()
     omodArPlayerPrimaryCalibre = None
 
     If !weapPlayerCurrentWeapon
-        Return
+        Debug.Trace("Load_v2:ParallelCachePlayerPrimaryAmmoType: No current weapon")
 
     ElseIf weapPlayerCurrentWeapon.GetAmmo()
         ; If the player's weapon uses ammo, try to find the calibre list for it
         FormList flstCalibre = GetCalibreLists(PlayerRef, weapPlayerCurrentWeapon)
+        Debug.Trace("Load_v2:ParallelCachePlayerPrimaryAmmoType: Caching weapon "+weapPlayerCurrentWeapon)
 
         If flstCalibre
             ; If we do, then cache the contents
@@ -1331,9 +1341,9 @@ Function AmmoCycleSecondaryNext(Keyword akKywdRequired = None)
     ; @param akKywdRequired: Optional tag to specify the type of ammo, e.g. AP, long-range
     ; ----------------------------------------
     If akKywdRequired
-        Debug.Trace("Loads_v2:AmmoCycleSecondaryNext: Cycling with keyword "+akKywdRequired)
+        Debug.Trace("Loads_v2:AmmoCycleSecondaryNext: Cycling, current ammo type: "+ammoArPlayerPrimaryCalibre[0]+", keyword: "+akKywdRequired)
     Else
-        Debug.Trace("Loads_v2:AmmoCycleSecondaryNext: Cycling")
+        Debug.Trace("Loads_v2:AmmoCycleSecondaryNext: Cycling, current ammo type: "+ammoArPlayerPrimaryCalibre[0])
     EndIf
 
     If iPlayerSecondaryCalibreLength > 0
@@ -1541,10 +1551,12 @@ Function HotkeyAmmoCycleType(Keyword akAmmoKeyword)
     ;
     ; @param akAmmoKeyword: The keyword to require
     ; ----------------------------------------
-    If bPlayerSecondaryActive
-        AmmoCycleSecondaryNext(akAmmoKeyword)
-    Else
-        AmmoCyclePrimaryNext(akAmmoKeyword)
+    If weapPlayerCurrentWeapon
+        If bPlayerSecondaryActive
+            AmmoCycleSecondaryNext(akAmmoKeyword)
+        Else
+            AmmoCyclePrimaryNext(akAmmoKeyword)
+        EndIf
     EndIf
 EndFunction
 
@@ -1559,11 +1571,13 @@ Function HotkeyContextNext()
     ; MCM entrypoint.
     ; ----------------------------------------
     Debug.Trace("Loads_v2:HotkeyContextNext: Secondary - "+bPlayerSecondaryActive)
-    If bPlayerSecondaryActive
-        AmmoCycleSecondaryPrev(None)
-    Else
-        AmmoCyclePrimaryNext(None)
-    EndIf
+    If weapPlayerCurrentWeapon
+        If bPlayerSecondaryActive
+            AmmoCycleSecondaryPrev(None)
+        Else
+            AmmoCyclePrimaryNext(None)
+        EndIf
+    EndIF
 EndFunction
 
 Function HotkeyContextPrev()
@@ -1573,10 +1587,12 @@ Function HotkeyContextPrev()
     ; MCM entrypoint.
     ; ----------------------------------------
     Debug.Trace("Loads_v2:HotkeyContextPrev: Secondary - "+bPlayerSecondaryActive)
-    If bPlayerSecondaryActive
-        AmmoCycleSecondaryPrev(None)
-    Else
-        AmmoCyclePrimaryPrev(None)
+    If weapPlayerCurrentWeapon
+        If bPlayerSecondaryActive
+            AmmoCycleSecondaryPrev(None)
+        Else
+            AmmoCyclePrimaryPrev(None)
+        EndIf
     EndIf
 EndFunction
 
@@ -1584,25 +1600,27 @@ Function HotkeyContextDefault()
     ; ----------------------------------------
     ; Switches the current weapon to the default ammo, if it's a supported ammo type.
     ; ----------------------------------------
-    If !bPlayerSecondaryActive && iPlayerPrimaryCalibreLength > 0
-        Debug.Trace("Loads_v2:HotkeyContextDefault: Switching primary ammo to default")
-        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
-            ; The equip was successful, so trigger the equip message and update the current ammo.
-            iPlayerPrimaryCalibreAmmoCurrent = 0
-            PlayerRef.EquipItem(ammoArPlayerPrimaryCalibre[0], False, False)
-        EndIf
+    If weapPlayerCurrentWeapon
+        If !bPlayerSecondaryActive && iPlayerPrimaryCalibreLength > 0
+            Debug.Trace("Loads_v2:HotkeyContextDefault: Switching primary ammo to default")
+            If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
+                ; The equip was successful, so trigger the equip message and update the current ammo.
+                iPlayerPrimaryCalibreAmmoCurrent = 0
+                PlayerRef.EquipItem(ammoArPlayerPrimaryCalibre[0], False, False)
+            EndIf
 
-    ElseIf bPlayerSecondaryActive && iPlayerSecondaryCalibreLength > 0
-        Debug.Trace("Loads_v2:HotkeyContextDefault: Switching secondary ammo to default")
-        If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
-            ; The equip was successful, so trigger the equip message and update the current ammo.
-            iPlayerSecondaryCalibreAmmoCurrent = 0
-            PlayerRef.EquipItem(ammoArPlayerSecondaryCalibre[0], False, False)
-        EndIf
+        ElseIf bPlayerSecondaryActive && iPlayerSecondaryCalibreLength > 0
+            Debug.Trace("Loads_v2:HotkeyContextDefault: Switching secondary ammo to default")
+            If bEquipOMod(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_Ammo_Default, True)
+                ; The equip was successful, so trigger the equip message and update the current ammo.
+                iPlayerSecondaryCalibreAmmoCurrent = 0
+                PlayerRef.EquipItem(ammoArPlayerSecondaryCalibre[0], False, False)
+            EndIf
 
-    Else
-        ; This weapon isn't in a supported ammo type!
-        a0aLOADS_MESG_AmmoError_Calibre.Show()
+        Else
+            ; This weapon isn't in a supported ammo type!
+            a0aLOADS_MESG_AmmoError_Calibre.Show()
+        EndIf
     EndIf
 EndFunction
 
@@ -1611,35 +1629,37 @@ Function HotkeyContextToggle()
     ; ----------------------------------------
     ; Toggles on or off the secondary weapon
     ; ----------------------------------------
-    If bPlayerSecondaryActive
-        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_Secondary_Default)
-            bPlayerSecondaryActive = False
+    If weapPlayerCurrentWeapon
+        If bPlayerSecondaryActive
+            If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_Secondary_Default)
+                bPlayerSecondaryActive = False
 
-            ; Restore the player's primary mode and ammo
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryCalibre[iPlayerPrimaryCalibreAmmoCurrent])
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryModeSelected[iPlayerPrimaryModeCurrent])
+                ; Restore the player's primary mode and ammo
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryCalibre[iPlayerPrimaryCalibreAmmoCurrent])
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerPrimaryModeSelected[iPlayerPrimaryModeCurrent])
 
-            ; Show the 'ammo equipped' message to indicate we've switched
-            PlayerRef.EquipItem(ammoArPlayerPrimaryCalibre[iPlayerPrimaryCalibreAmmoCurrent], False, False)
+                ; Show the 'ammo equipped' message to indicate we've switched
+                PlayerRef.EquipItem(ammoArPlayerPrimaryCalibre[iPlayerPrimaryCalibreAmmoCurrent], False, False)
+            Else
+                a0aLOADS_MESG_Error_TooManyItems.Show()
+            EndIf
+
+        ElseIf omodPlayerSecondary
+            If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodPlayerSecondary)
+                bPlayerSecondaryActive = True
+
+                ; Restore the secondary's ammo, and set the primary mode reminder
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerSecondaryCalibre[iPlayerSecondaryCalibreAmmoCurrent])
+                PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPrimaryModeLast[iPlayerPrimaryModeCurrent])
+
+                ; Show the 'ammo equipped' message to indicate we've switched
+                PlayerRef.EquipItem(ammoArPlayerSecondaryCalibre[iPlayerSecondaryCalibreAmmoCurrent], False, False)
+            Else
+                a0aLOADS_MESG_Error_TooManyItems.Show()
+            EndIf
         Else
-            a0aLOADS_MESG_Error_TooManyItems.Show()
+            a0aLOADS_MESG_SecondaryWarning_None.Show()
         EndIf
-
-    ElseIf omodPlayerSecondary
-        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodPlayerSecondary)
-            bPlayerSecondaryActive = True
-
-            ; Restore the secondary's ammo, and set the primary mode reminder
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerSecondaryCalibre[iPlayerSecondaryCalibreAmmoCurrent])
-            PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPrimaryModeLast[iPlayerPrimaryModeCurrent])
-
-            ; Show the 'ammo equipped' message to indicate we've switched
-            PlayerRef.EquipItem(ammoArPlayerSecondaryCalibre[iPlayerSecondaryCalibreAmmoCurrent], False, False)
-        Else
-            a0aLOADS_MESG_Error_TooManyItems.Show()
-        EndIf
-    Else
-        a0aLOADS_MESG_SecondaryWarning_None.Show()
     EndIf
 EndFunction
 
@@ -1652,19 +1672,21 @@ State ZoomedIn
         ; ----------------------------------------
         ; Zoom in, if the player has a scope and it's not at maximum zoom already
         ; ----------------------------------------
-        If iPlayerScopeZoomMax > 0
-            If iPlayerScopeZoomCurrent < iPlayerScopeZoomMax
-                ; If the scope isn't already at maximum zoom, apply the scope modifier, and if that works then increment the 'zoom level'
-                ; Otherwise, a failed application would leave the weapon not zoomed in, but internally it would be recorded as such
-                If bScopeTypeAlt
-                    Debug.Trace("Loads_v2:HotkeyContextNext: Equipping alt scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1].GetName())
-                    If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1])
-                        iPlayerScopeZoomCurrent += 1
-                    EndIf
-                Else
-                    Debug.Trace("Loads_v2:HotkeyContextNext: Equipping base scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1].GetName())
-                    If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent+1])
-                        iPlayerScopeZoomCurrent += 1
+        If weapPlayerCurrentWeapon
+            If iPlayerScopeZoomMax > 0
+                If iPlayerScopeZoomCurrent < iPlayerScopeZoomMax
+                    ; If the scope isn't already at maximum zoom, apply the scope modifier, and if that works then increment the 'zoom level'
+                    ; Otherwise, a failed application would leave the weapon not zoomed in, but internally it would be recorded as such
+                    If bScopeTypeAlt
+                        Debug.Trace("Loads_v2:HotkeyContextNext: Equipping alt scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1].GetName())
+                        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1])
+                            iPlayerScopeZoomCurrent += 1
+                        EndIf
+                    Else
+                        Debug.Trace("Loads_v2:HotkeyContextNext: Equipping base scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent+1].GetName())
+                        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent+1])
+                            iPlayerScopeZoomCurrent += 1
+                        EndIf
                     EndIf
                 EndIf
             EndIf
@@ -1675,19 +1697,21 @@ State ZoomedIn
         ; ----------------------------------------
         ; Zoom out, if the player has a scope and it's not at minimum zoom already
         ; ----------------------------------------
-        If iPlayerScopeZoomMax > 0
-            If iPlayerScopeZoomCurrent > 0
-                ; If the scope isn't already at maximum zoom, apply the scope modifier, and if that works then increment the 'zoom level'
-                ; Otherwise, a failed application would leave the weapon not zoomed in, but internally it would be recorded as such
-                If bScopeTypeAlt
-                    Debug.Trace("Loads_v2:HotkeyContextPrev: Equipping alt scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent-1].GetName())
-                    If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent-1])
-                        iPlayerScopeZoomCurrent -= 1
-                    EndIf
-                Else
-                    Debug.Trace("Loads_v2:HotkeyContextPrev: Equipping base scope: "+omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent-1].GetName())
-                    If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent-1])
-                        iPlayerScopeZoomCurrent -= 1
+        If weapPlayerCurrentWeapon
+            If iPlayerScopeZoomMax > 0
+                If iPlayerScopeZoomCurrent > 0
+                    ; If the scope isn't already at maximum zoom, apply the scope modifier, and if that works then increment the 'zoom level'
+                    ; Otherwise, a failed application would leave the weapon not zoomed in, but internally it would be recorded as such
+                    If bScopeTypeAlt
+                        Debug.Trace("Loads_v2:HotkeyContextPrev: Equipping alt scope: "+omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent-1].GetName())
+                        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent-1])
+                            iPlayerScopeZoomCurrent -= 1
+                        EndIf
+                    Else
+                        Debug.Trace("Loads_v2:HotkeyContextPrev: Equipping base scope: "+omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent-1].GetName())
+                        If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent-1])
+                            iPlayerScopeZoomCurrent -= 1
+                        EndIf
                     EndIf
                 EndIf
             EndIf
@@ -1698,9 +1722,11 @@ State ZoomedIn
         ; ----------------------------------------
         ; Zooms the scope out to the default level of zoom
         ; ----------------------------------------
-        If omodArPlayerScopeTypeBase
-            If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeZoomCurrent_Default)
-                iPlayerScopeZoomCurrent == iPlayerScopeZoomMax
+        If weapPlayerCurrentWeapon
+            If omodArPlayerScopeTypeBase
+                If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeZoomCurrent_Default)
+                    iPlayerScopeZoomCurrent == iPlayerScopeZoomMax
+                EndIf
             EndIf
         EndIf
     EndFunction
@@ -1710,39 +1736,41 @@ State ZoomedIn
         ; Toggle off the scope zoom special effects, or them on if they're already off
         ; ----------------------------------------
         Debug.Trace("Loads_v2:HotkeyContextToggle: Triggered in zoom mode")
-        If omodArPlayerScopeTypeAlt
-            Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope available")
-            If bScopeTypeAlt
-                Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope active")
+        If weapPlayerCurrentWeapon
+            If omodArPlayerScopeTypeAlt
+                Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope available")
+                If bScopeTypeAlt
+                    Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope active")
 
 
-                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent], bLoud=True)
+                    If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent], bLoud=True)
 
-                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base)
-                    Debug.Trace("Loads_v2:HotkeyContextToggle: Switched off alternate scope")
-                    ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent])
-                    bScopeTypeAlt = False
-                    a0aLOADS_MESG_ScopeType_Base.Show()
+                    ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Base)
+                        Debug.Trace("Loads_v2:HotkeyContextToggle: Switched off alternate scope")
+                        ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeBase[iPlayerScopeZoomCurrent])
+                        bScopeTypeAlt = False
+                        a0aLOADS_MESG_ScopeType_Base.Show()
+                    Else
+                        a0aLOADS_MESG_Error_TooManyItems.Show()
+                    EndIf
+
                 Else
-                    a0aLOADS_MESG_Error_TooManyItems.Show()
-                EndIf
+                    Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope inactive")
 
+                    If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent], bLoud=True)
+
+                    ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt)
+                        Debug.Trace("Loads_v2:HotkeyContextToggle: Switched on alternate scope")
+                        ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent])
+                        bScopeTypeAlt = True
+                        a0aLOADS_MESG_ScopeType_Alt.Show()
+                    Else
+                        a0aLOADS_MESG_Error_TooManyItems.Show()
+                    EndIf
+                EndIf
             Else
-                Debug.Trace("Loads_v2:HotkeyContextToggle: Toggling with alternate scope inactive")
-
-                If bEquipTwoOMods(PlayerRef, weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent], bLoud=True)
-
-                ; If PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, a0aLOADS_OMOD_ScopeType_Alt)
-                    Debug.Trace("Loads_v2:HotkeyContextToggle: Switched on alternate scope")
-                    ; PlayerRef.AttachModToInventoryItem(weapPlayerCurrentWeapon, omodArPlayerScopeTypeAlt[iPlayerScopeZoomCurrent])
-                    bScopeTypeAlt = True
-                    a0aLOADS_MESG_ScopeType_Alt.Show()
-                Else
-                    a0aLOADS_MESG_Error_TooManyItems.Show()
-                EndIf
+                a0aLOADS_MESG_ScopeError_NotSupported.Show()
             EndIf
-        Else
-            a0aLOADS_MESG_ScopeError_NotSupported.Show()
         EndIf
     EndFunction
 endState
