@@ -111,6 +111,79 @@ Function PatchInNewVariant(FormList akPatchList, String asCaller)
 EndFunction
 
 
+Function PatchInNewSecondaryWeapon(FormList akPatchList, String asCaller)
+    Bool bError = False
+    FormList flstWeapon = akPatchList.GetAt(0) as FormList
+    FormList flstAmmo = akPatchList.GetAt(1) as FormList
+    Keyword kywdFitted = akPatchList.GetAt(2) as Keyword
+    ObjectMod omodActive = akPatchList.GetAt(3) as ObjectMod
+
+    FormList flstWeaponAmmoList = flstWeapon.GetAt(0) as FormList
+    FormList flstWeaponFittedKeyword = flstWeapon.GetAt(1) as FormList
+    FormList flstWeaponActiveObjectMod = flstWeapon.GetAt(2) as FormList
+
+
+    If !flstWeapon
+        Debug.Trace("Loads_v2:PatchInNewPrimaryMode: "+asCaller+" patch form list "+akPatchList+" index 0 is not a form list")
+        bError = True
+    Else
+        If !flstWeaponAmmoList
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a secondary weapon master form list. Its index 0 should be a FLST but isn't.")
+            bError = True
+        ElseIf !(flstWeaponAmmoList.GetAt(0) as FormList)
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a master ammo list. Its index 0 "+flstWeaponAmmoList+" should contain FLST but doesn't.")
+            bError = True
+        EndIf
+
+        If !flstWeaponFittedKeyword
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a secondary weapon master form list. Its index 0 should be a FLST but isn't.")
+            bError = True
+        ElseIf !(flstWeaponFittedKeyword.GetAt(0) as Keyword)
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a secondary weapon master form list. Its index 0 "+flstWeaponFittedKeyword+" should contain KYWD but doesn't.")
+            bError = True
+        EndIf
+
+        If !flstWeaponActiveObjectMod
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a primary mode master form list. Its index 1 should be a FLST but isn't.")
+            bError = True
+        ElseIf !((akPatchList.GetAt(1) as FormList).GetAt(0) as Keyword)
+            Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a secondary weapon master form list. Its index 1 "+flstWeaponActiveObjectMod+" should contain KYWD but doesn't.")
+            bError = True
+        EndIf
+    EndIf
+    If !flstAmmo
+        Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 0 is not a FLST")
+        bError = True
+    EndIf
+    If !kywdFitted
+        Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 1 is not a KYWD")
+        bError = True
+    EndIf
+    If !omodActive
+        Debug.Trace("Loads_v2:PatchInNewSecondaryWeapon: "+asCaller+" patch form list "+akPatchList+" index 2 is not an OMOD")
+        bError = True
+    EndIf
+
+    If bError
+        Debug.MessageBox("Error registering primary modes from "+asCaller+". Quit and check Papyrus logs if possible.")
+        Return
+    EndIf
+
+    while bPrimaryModeLocked
+        Utility.wait(1.0)
+    endWhile
+
+    bPrimaryModeLocked = True
+    flstWeaponAmmoList.AddForm(flstAmmo)
+    flstWeaponFittedKeyword.AddForm(kywdFitted)
+    flstWeaponActiveObjectMod.AddForm(omodActive)
+    bPrimaryModeLocked = False
+
+    CancelTimer(16)
+    StartTimer(1.0, 16)
+EndFunction
+
+
 Function PatchInNewPrimaryMode(FormList akPatchList, String asCaller)
     Bool bError = False
     FormList flstWeapon = akPatchList.GetAt(0) as FormList

@@ -27,22 +27,22 @@ There's a framework set up to make it easy to add a new variant of ammo, new cal
 
 ### Ammunition
 
-* [Adding a new variant of an existing calibre](loads_v2/modding/variant.md)
-* [Adding a new calibre](loads_v2/modding/calibre.md)
+* [Adding a new variant of an existing calibre](./variant.md)
+* [Adding a new calibre](./calibre.md)
 
 ### Primary Modes
 
 Primary modes are optional alternative fire modes that use the same ammo and projectiles as the primary weapon.
 
-* [Adding a new primary mode to a weapon that already has one](loads_v2/modding/primary_mode.md)
-* [Adding a new weapon that can have primary modes](loads_v2/modding/primary_mode_weapons.md)
+* [Adding a new primary mode to a weapon that already has one](./primary.md)
+* [Adding a new weapon that can have primary modes](./primary_similar.md)
 
 ### Secondaries
 
 Secondary weapons/modes are optional alternative fire modes that use *different* ammo and/or projectiles to the primary weapon.
 
-* [Adding a new secondary weapon/mode to a weapon that already has one](loads_v2/modding/secondary.md)
-* [Adding a new weapon that can have secondary weapons/modes](loads_v2/modding/secondary_weapons.md)
+* [Adding a new secondary weapon/mode to a weapon that already has one](./secondary.md)
+* [Adding a new weapon that can have secondary weapons/modes](./secondary_weapons.md)
 
 ## FAQ
 

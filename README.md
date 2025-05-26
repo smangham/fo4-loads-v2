@@ -1,6 +1,10 @@
 ![# Loads of Ammo v2](Docs/Loads_v2/Assets/title.png)
 Create variant ammunition types and switch them on the fly. Also allows you to adjust your scope type and zoom, use a range of alternate fire modes, or even equip secondary weapons like under-barrel grenade launchers.
 
+### Credits
+
+Thanks to [PsyWarrior84](https://next.nexusmods.com/profile/psywarrior84) for helping push me to get this done!
+
 ## Introduction
 
 Build an ammunition workbench and some ammo variants,
@@ -21,3 +25,4 @@ Primary modes vary wildly by weapon - for regular ballistic guns it's usually si
 ## Modding
 
 If you want to use this framework to add your own ammo calibres, ammo variants, new secondary weapons, scope types or firing modes [check out the modding guide](Docs/Loads_v2/Modding/index.md).
+g

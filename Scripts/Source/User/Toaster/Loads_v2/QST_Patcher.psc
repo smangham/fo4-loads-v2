@@ -131,7 +131,7 @@ Function PatchNewSecondaries()
         Debug.Trace(self+":PatchNewSecondaries: Patching in "+iLoop+" new secondaries")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewPrimaryMode(NewSecondaries[iLoop], self)
+            a0aLOADS_QST_Patcher.PatchInNewSecondaryWeapon(NewSecondaries[iLoop], self)
         EndWhile
     EndIf
 EndFunction
