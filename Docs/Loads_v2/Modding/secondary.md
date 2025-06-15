@@ -41,7 +41,7 @@ it's easiest to copy the setup for the Combat Rifle.
   that fits your new secondary weapon
   (e.g. `a0aLOADS_COBJ_WeapCombatRifle_Barrel_Flamer`). It needs:
    * **Created Object:** Your new 'secondary weapon fitted' object modifier (e.g. `a0aLOADS_OMOD_Secondary_WeapCombatRifle_Barrel_ShortFlamer`).
-5. **Create Patch Form List:** *Loads* adds new secondary weaponss using scripts, to avoid conflicts.
+5. **Create Patch Form List:** *Loads* adds new secondary weapons using scripts, to avoid conflicts.
    Create a new `FLST` for your mode (e.g. `MyWeap_SecondaryPatch`).
    It needs to contain, *in the following order*,
    the secondary weapon list for the weapon you're adding this to (e.g. `a0aLOADS_FLST_Secondary_WeapCombatRifle` for the Combat Rifle),

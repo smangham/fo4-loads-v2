@@ -278,8 +278,8 @@ Function RegisterForEvents(Bool bLoud = False)
     ; ----------------------------------------
     Debug.Trace("Loads_v2:RegisterForEvents: Registering...")
     UnregisterForAllEvents()
-	RegisterForRemoteEvent(PlayerRef, "OnItemEquipped")
-	RegisterForRemoteEvent(PlayerRef, "OnItemUnEquipped")
+    RegisterForRemoteEvent(PlayerRef, "OnItemEquipped")
+    RegisterForRemoteEvent(PlayerRef, "OnItemUnEquipped")
     RegisterForRemoteEvent(PlayerRef, "OnPlayerLoadGame")
     RegisterForMenuOpenCloseEvent("PauseMenu")
     RegisterForMenuOpenCloseEvent("ScopeMenu")
@@ -306,7 +306,7 @@ Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
     Debug.Trace("Loads_v2:OnMenuOpenCloseEvent: "+asMenuName+", "+abOpening)
     If asMenuName == "ScopeMenu"
         If abOpening
-            GotoState("ZoomedIn")
+            GotoState("ZoomedIn") && iPlayerScopeZoomMax > -1
         Else
             GotoState("")
         EndIf
@@ -1774,5 +1774,3 @@ State ZoomedIn
         EndIf
     EndFunction
 endState
-
-

@@ -25,4 +25,3 @@ Primary modes vary wildly by weapon - for regular ballistic guns it's usually si
 ## Modding
 
 If you want to use this framework to add your own ammo calibres, ammo variants, new secondary weapons, scope types or firing modes [check out the modding guide](Docs/Loads_v2/Modding/index.md).
-g
