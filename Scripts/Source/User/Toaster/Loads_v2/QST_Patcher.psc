@@ -1,6 +1,6 @@
 Scriptname Toaster:Loads_v2:QST_Patcher extends Quest
 
-Toaster:Loads_v2:QST_PatcherCore Property a0aLOADS_QST_Patcher Auto Const
+Toaster:Loads_v2:QST_PatcherCore Property a0aLOADS_QST_PatcherCore Auto Const
 Toaster:Loads_v2:QST_Manager Property a0aLOADS_QST_Manager Auto Const
 
 ; ------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ Function PatchNewCalibres()
 
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewCalibreBase(NewCalibres[iLoop], GetFormID())
+            a0aLOADS_QST_PatcherCore.PatchInNewCalibreBase(NewCalibres[iLoop], GetFormID())
         EndWhile
     EndIf
 EndFunction
@@ -77,7 +77,7 @@ Function PatchNewConvertedCalibres()
         Debug.Trace(self+":PatchNewCalibreConverted: Patching in "+iLoop+" converted calibres")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewCalibreConverted(NewConvertedCalibres[iLoop], GetFormID())
+            a0aLOADS_QST_PatcherCore.PatchInNewCalibreConverted(NewConvertedCalibres[iLoop], GetFormID())
         EndWhile
     EndIf
 EndFunction
@@ -95,7 +95,7 @@ Function PatchNewAmmoVariants()
         Debug.Trace(self+":PatchNewAmmoVariants: Patching in "+iLoop+" new variants")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewVariant(NewAmmoVariants[iLoop], GetFormID())
+            a0aLOADS_QST_PatcherCore.PatchInNewVariant(NewAmmoVariants[iLoop], GetFormID())
         EndWhile
     EndIf
 EndFunction
@@ -113,7 +113,7 @@ Function PatchNewPrimaryModes()
         Debug.Trace(self+":PatchNewPrimaryModes: Patching in "+iLoop+" new variants")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewPrimaryMode(NewPrimaryModes[iLoop], self)
+            a0aLOADS_QST_PatcherCore.PatchInNewPrimaryMode(NewPrimaryModes[iLoop], self)
         EndWhile
     EndIf
 EndFunction
@@ -131,7 +131,7 @@ Function PatchNewSecondaries()
         Debug.Trace(self+":PatchNewSecondaries: Patching in "+iLoop+" new secondaries")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewSecondaryWeapon(NewSecondaries[iLoop], self)
+            a0aLOADS_QST_PatcherCore.PatchInNewSecondaryWeapon(NewSecondaries[iLoop], self)
         EndWhile
     EndIf
 EndFunction
@@ -149,7 +149,7 @@ Function PatchNewWeaponsWithSecondaries()
         Debug.Trace(self+":PatchNewWeaponsWithSecondaries: Patching in "+iLoop+" new weapons with secondaries")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewWeaponWithSecondaries(NewWeaponsWithSecondaries[iLoop], self)
+            a0aLOADS_QST_PatcherCore.PatchInNewWeaponWithSecondaries(NewWeaponsWithSecondaries[iLoop], self)
         EndWhile
     EndIf
 EndFunction
@@ -167,7 +167,7 @@ Function PatchNewWeaponsWithPrimaryModes()
         Debug.Trace(self+":PatchNewWeaponsWithPrimaryModes: Patching in "+iLoop+" new weapons with primary modes")
         While (iLoop > 0)
             iLoop -= 1
-            a0aLOADS_QST_Patcher.PatchInNewWeaponWithPrimaryModes(NewWeaponsWithPrimaryModes[iLoop], self)
+            a0aLOADS_QST_PatcherCore.PatchInNewWeaponWithPrimaryModes(NewWeaponsWithPrimaryModes[iLoop], self)
         EndWhile
     EndIf
 EndFunction

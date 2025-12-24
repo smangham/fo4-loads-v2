@@ -1,0 +1,8 @@
+.ba2$
+.esp$
+.esl$
+.esm$
+.xml$
+.png$
+.ini$
+.json$
