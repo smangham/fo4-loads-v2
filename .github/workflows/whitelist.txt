@@ -2,7 +2,6 @@
 .esp$
 .esl$
 .esm$
-.xml$
-.png$
-.ini$
-.json$
+^fomod/
+^F4SE/
+^MCM/
